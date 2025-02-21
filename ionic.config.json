@@ -1,0 +1,7 @@
+{
+  "name": "nattie-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
