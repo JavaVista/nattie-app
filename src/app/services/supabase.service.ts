@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { env } from 'src/environments/env';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
+    this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
   }
 
   async signUp(email: string, password: string) {
