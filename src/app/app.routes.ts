@@ -14,4 +14,8 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () => import('./home/home.page').then( m => m.HomePage)
   },
+  {
+    path: 'admin',
+    loadComponent: () => import('./microblogs/admin/admin.page').then( m => m.AdminPage)
+  },
 ];
