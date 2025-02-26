@@ -4,18 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList } from '@ionic/angular/standalone';
 import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
+import { ModalController } from '@ionic/angular/standalone';
+import { CreateMicroblogComponent } from '../create-microblog/create-microblog.component';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.page.html',
   styleUrls: ['./admin.page.scss'],
   standalone: true,
+
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList]
 })
 export class AdminPage implements OnInit {
   microblogs: Microblog[] = [];
   private supabaseService = inject(SupabaseService);
-
+  private modalCtrl = inject(ModalController);
   constructor() { }
 
   ngOnInit() {
@@ -58,8 +61,17 @@ export class AdminPage implements OnInit {
     await this.loadMicroblogs();
   }
 
-  openCreateModal() {
-    throw new Error('Method not implemented.');
+  async openCreateModal() {
+    const modal = await this.modalCtrl.create({
+      component: CreateMicroblogComponent,
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.success) {
+      await this.loadMicroblogs();
+    }
   }
 
 }

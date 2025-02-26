@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Create Microblog</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form">
+    <ion-card>
+      <ion-card-content>
+        <ion-input formControlName="title" placeholder="Title"></ion-input>
+        @if (form.get('title')?.touched && form.get('title')?.invalid) {
+        <p class="error">
+          Title is required (min 5 characters).
+        </p>
+        }
+
+        <ion-textarea formControlName="content" placeholder="Write your blog..."></ion-textarea>
+        @if (form.get('content')?.touched && form.get('content')?.invalid) {
+        <p class="error">
+          Content must be at least 10 characters.
+        </p>
+        }
+        <ion-input formControlName="imageUrl" placeholder="Image URL (optional)"></ion-input>
+
+        <ion-button expand="full" (click)="createMicroblog()" [disabled]="!isFormValid()">
+          Post
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>
