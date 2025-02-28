@@ -1,16 +1,29 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>login</ion-title>
+    <ion-title>Account Access</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card>
-    <ion-card-content>
-      <ion-input placeholder="Email" [(ngModel)]="email" type="email"></ion-input>
-      <ion-input placeholder="Password" [(ngModel)]="password" type="password"></ion-input>
-      <ion-button expand="full" (click)="signIn()">Log In</ion-button>
-      <ion-button expand="full" fill="outline" (click)="signUp()">Sign Up</ion-button>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input #emailInput type="email" (ngModel)="email()"
+        (ionChange)="email.set($any($event.target).value)"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input #passwordInput type="password" (ngModel)="password()"
+        (ionChange)="password.set($any($event.target).value)"></ion-input>
+    </ion-item>
+  </ion-list>
+
+
+  @if (isLoading()) {
+  <ion-spinner name="crescent"></ion-spinner>
+  }
+
+  <ion-button expand="block" (click)="onSignIn()" [disabled]="isLoading()">Log In</ion-button>
+  <ion-button fill="clear" (click)="onRegister()">Register</ion-button>
+  <ion-button expand="block" fill="clear" (click)="onCancel()">Cancel</ion-button>
 </ion-content>

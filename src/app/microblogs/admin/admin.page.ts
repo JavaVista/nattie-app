@@ -1,10 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList, ModalController } from '@ionic/angular/standalone';
 import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
-import { ModalController } from '@ionic/angular/standalone';
 import { CreateMicroblogComponent } from '../create-microblog/create-microblog.component';
 
 @Component({

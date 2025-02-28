@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'src/environments/env';
 import { Microblog } from '../microblogs/microblogs.model';
@@ -8,24 +8,45 @@ import { Microblog } from '../microblogs/microblogs.model';
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
+  private authState = signal<{ user: any | null; error: any | null; }>({ user: null, error: null });
+  public user = computed(() => this.authState().user);
+  public isLoggedIn = computed(() => !!this.authState().user);
 
   constructor() {
     this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
+    this.getUser().then(() => {
+      console.log("authState initialized");
+    });
   }
 
   async signUp(email: string, password: string) {
-    return await this.supabase.auth.signUp({ email, password });
+    const { data, error } = await this.supabase.auth.signUp({ email, password });
+    if (!error) {
+      this.authState.set({ user: data.user, error: null });
+    }
+    return { data, error };
   }
+
   async signIn(email: string, password: string) {
-    return await this.supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+    if (!error) {
+      this.authState.set({ user: data.user, error: null });
+    }
+    return { data, error };
   }
 
   async signOut() {
-    return await this.supabase.auth.signOut();
+    const { error } = await this.supabase.auth.signOut();
+    if (!error) {
+      this.authState.set({ user: null, error: null });
+    }
+    return { error };
   }
 
   async getUser() {
-    return await this.supabase.auth.getUser();
+    const { data, error } = await this.supabase.auth.getUser();
+    this.authState.set({ user: data.user, error }); 
+    return { data, error };
   }
 
   async createMicroblog(microblog: Microblog) {

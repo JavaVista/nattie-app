@@ -1,8 +1,7 @@
 import { Component, computed, inject, OnInit, Signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonInput, IonHeader, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonTextarea, IonToolbar } from "@ionic/angular/standalone";
+import { IonInput, IonHeader, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonTextarea, IonToolbar, ModalController } from "@ionic/angular/standalone";
 import { SupabaseService } from 'src/app/services/supabase.service';
-import { ModalController } from '@ionic/angular/standalone';
 import { Microblog } from '../microblogs.model';
 
 @Component({
