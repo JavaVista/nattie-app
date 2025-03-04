@@ -3,7 +3,7 @@ export interface Microblog {
   userId: string;
   title: string;
   content: string;
-  imageUrl?: string;
-  videoUrl?: string;
-  createdAt?: string;
+  fileUrls?: string[];
+  created_at?: string;
+  location?: string;
 }

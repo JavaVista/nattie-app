@@ -3,6 +3,8 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonMenu, IonContent, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonAvatar, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { SupabaseService } from './services/supabase.service';
+import { addIcons } from 'ionicons';
+import { settings, home, logIn, logOut } from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +18,11 @@ export class AppComponent implements OnInit {
   isLoggedIn = this.supabaseService.isLoggedIn;
   username = computed(() => this.supabaseService.user()?.email || 'Guest');
 
-  constructor() {  }
+  constructor() {
+    addIcons({ home, settings, logIn, logOut });
+  }
 
-  ngOnInit(): void {  }
+  ngOnInit(): void { }
 
 
 

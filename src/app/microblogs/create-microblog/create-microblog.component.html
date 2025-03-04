@@ -11,6 +11,7 @@
   <form [formGroup]="form">
     <ion-card>
       <ion-card-content>
+
         <ion-input formControlName="title" placeholder="Title"></ion-input>
         @if (form.get('title')?.touched && form.get('title')?.invalid) {
         <p class="error">
@@ -18,18 +19,30 @@
         </p>
         }
 
-        <ion-textarea formControlName="content" placeholder="Write your blog..."></ion-textarea>
+        <quill-editor (onEditorChanged)="onEditorChange($event)" [modules]="quillModules" [styles]="quillStyles"
+          [placeholder]="'Write your content here...'">
+        </quill-editor>
         @if (form.get('content')?.touched && form.get('content')?.invalid) {
         <p class="error">
           Content must be at least 10 characters.
         </p>
         }
-        <ion-input formControlName="imageUrl" placeholder="Image URL (optional)"></ion-input>
 
-        <ion-button expand="full" (click)="createMicroblog()" [disabled]="!isFormValid()">
-          Post
-        </ion-button>
+        <input type="file" multiple (change)="handleFileInput($event)" />
+        @if (files().length > 0) {
+        <p>{{ files().length }} files selected.</p>
+        }
+
+        @if (uploadProgress() > 0 && uploadProgress() < 100) { <ion-progress-bar [value]="uploadProgress() / 100">
+          </ion-progress-bar>
+          }
+
+          <ion-button expand="full" (click)="createMicroblog()" [disabled]="!isFormValid()">
+            Post
+          </ion-button>
       </ion-card-content>
     </ion-card>
   </form>
+
+
 </ion-content>

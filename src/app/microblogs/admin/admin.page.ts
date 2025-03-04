@@ -18,6 +18,7 @@ export class AdminPage implements OnInit {
   microblogs: Microblog[] = [];
   private supabaseService = inject(SupabaseService);
   private modalCtrl = inject(ModalController);
+
   constructor() { }
 
   ngOnInit() {
@@ -30,20 +31,6 @@ export class AdminPage implements OnInit {
       console.error('Error loading microblogs:', error.message);
     } else {
       this.microblogs = data || [];
-    }
-  }
-
-  async createMicroblog() {
-    const newMicroblog: Microblog = {
-      userId: 'admin',
-      title: 'New Microblog',
-      content: 'This is a new post.',
-      imageUrl: '',
-    };
-
-    const { data, error } = await this.supabaseService.createMicroblog(newMicroblog);
-    if (!error && data) {
-      this.microblogs.unshift(data);
     }
   }
 
@@ -71,6 +58,13 @@ export class AdminPage implements OnInit {
     if (data?.success) {
       await this.loadMicroblogs();
     }
+  }
+
+  getThumbnail(blog: Microblog): string {
+    if (blog.fileUrls && blog.fileUrls.length > 0) {
+      return blog.fileUrls[0]; // first file as thumbnail
+    }
+    return 'https://via.placeholder.com/100'; // Fallback placeholder
   }
 
 }

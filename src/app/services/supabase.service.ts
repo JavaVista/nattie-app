@@ -45,7 +45,7 @@ export class SupabaseService {
 
   async getUser() {
     const { data, error } = await this.supabase.auth.getUser();
-    this.authState.set({ user: data.user, error }); 
+    this.authState.set({ user: data.user, error });
     return { data, error };
   }
 
@@ -56,11 +56,28 @@ export class SupabaseService {
     return { data, error };
   }
 
+  async uploadFile(bucket: string, file: File) {
+    const filePath = `microblogs/${Date.now()}-${file.name}`;
+    const { data, error } = await this.supabase.storage.from(bucket).upload(filePath, file);
+
+    if (error) {
+      console.error('Supabase file upload failed:', error.message);
+      return { error };
+    }
+
+    const { data: publicUrlData } = this.supabase
+      .storage
+      .from(bucket)
+      .getPublicUrl(filePath);
+
+    return { publicUrl: publicUrlData.publicUrl };
+  }
+
   async getMicroblogs() {
     const { data, error } = await this.supabase
       .from('microblogs')
       .select('*')
-      .order('createdAt', { ascending: false });
+      .order('created_at', { ascending: false });
     return { data, error };
   }
 

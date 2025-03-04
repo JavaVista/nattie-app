@@ -11,7 +11,7 @@
   <ion-list>
     <ion-item *ngFor="let blog of microblogs">
       <ion-thumbnail slot="start">
-        <img [src]="blog.imageUrl || 'https://via.placeholder.com/100'" alt="Blog thumbnail" />
+        <img [src]="getThumbnail(blog)" alt="Blog thumbnail" />
       </ion-thumbnail>
       <ion-label>
         <h2>{{ blog.title }}</h2>
