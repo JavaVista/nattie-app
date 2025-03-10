@@ -1,8 +1,21 @@
+:host ::ng-deep {
+  .ql-toolbar {
+    .ql-formats {
+      margin-right: 8px;
+    }
 
+    button {
+      width: 28px;
+      height: 28px;
+      padding: 3px;
+    }
 
+    .ql-picker {
+      font-size: 14px;
+    }
+  }
 
-// quill-editor {
-//   height: 200px;  // You can tweak this
-//   overflow: auto;
-//   background-color: #fff;  // Make sure background is visible
-// }
+  .ql-container {
+    font-size: 16px;
+  }
+}

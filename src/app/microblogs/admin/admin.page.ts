@@ -61,8 +61,8 @@ export class AdminPage implements OnInit {
   }
 
   getThumbnail(blog: Microblog): string {
-    if (blog.fileUrls && blog.fileUrls.length > 0) {
-      return blog.fileUrls[0]; // first file as thumbnail
+    if (blog.file_urls && blog.file_urls.length > 0) {
+      return blog.file_urls[0]; // first file as thumbnail
     }
     return 'https://via.placeholder.com/100'; // Fallback placeholder
   }

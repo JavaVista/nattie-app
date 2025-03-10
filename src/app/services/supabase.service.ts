@@ -27,6 +27,13 @@ export class SupabaseService {
     return { data, error };
   }
 
+  async insertUser(userId: string, email: string, name: string) {
+    const { data, error } = await this.supabase
+      .from('users')
+      .insert([{ id: userId, email, name, created_at: new Date().toISOString() }]);
+    return { data, error };
+  }
+
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
     if (!error) {
@@ -58,7 +65,11 @@ export class SupabaseService {
 
   async uploadFile(bucket: string, file: File) {
     const filePath = `microblogs/${Date.now()}-${file.name}`;
-    const { data, error } = await this.supabase.storage.from(bucket).upload(filePath, file);
+
+    const { data, error } = await this.supabase
+      .storage
+      .from(bucket)
+      .upload(filePath, file);
 
     if (error) {
       console.error('Supabase file upload failed:', error.message);
@@ -72,6 +83,7 @@ export class SupabaseService {
 
     return { publicUrl: publicUrlData.publicUrl };
   }
+
 
   async getMicroblogs() {
     const { data, error } = await this.supabase

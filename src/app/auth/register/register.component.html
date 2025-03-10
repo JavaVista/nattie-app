@@ -8,27 +8,38 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list>
-    <ion-item>
-      <ion-label position="floating">Email</ion-label>
-      <ion-input type="email" (ngModel)="email()" (ionChange)="email.set($any($event.target).value)"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" (ngModel)="password()"
-        (ionChange)="password.set($any($event.target).value)"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Confirm Password</ion-label>
-      <ion-input type="password" (ngModel)="confirmPassword()"
-        (ionChange)="confirmPassword.set($any($event.target).value)"></ion-input>
-    </ion-item>
-  </ion-list>
+  <ion-content class="ion-padding">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Name</ion-label>
+        <ion-input type="text" [ngModel]="name()" (ionChange)="name.set($any($event.target).value)"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" [ngModel]="email()" (ionChange)="email.set($any($event.target).value)"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Password</ion-label>
+        <ion-input type="password" [ngModel]="password()"
+          (ionChange)="password.set($any($event.target).value)"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Confirm Password</ion-label>
+        <ion-input type="password" [ngModel]="confirmPassword()"
+          (ionChange)="confirmPassword.set($any($event.target).value)"></ion-input>
+      </ion-item>
+    </ion-list>
 
-  @if (isLoading()) {
-  <ion-spinner name="crescent"></ion-spinner>
-  }
+    @if (errorMessage()) {
+    <ion-text color="danger">
+      <p>{{ errorMessage() }}</p>
+    </ion-text>
+    }
 
-  <ion-button expand="block" (click)="signUp()" [disabled]="isLoading()">Register</ion-button>
+    @if (isLoading()) {
+    <ion-spinner name="crescent"></ion-spinner>
+    }
 
-</ion-content>
+    <ion-button expand="block" (click)="signUp()" [disabled]="isLoading()">Register</ion-button>
+
+  </ion-content>

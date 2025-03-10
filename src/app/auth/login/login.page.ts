@@ -66,7 +66,6 @@ export class LoginPage implements OnInit {
       this.error.set('Invalid login credentials.');
       this.showAlert('Invalid login credentials.');
     } else {
-      console.log('User signed in:', data);
       this.router.navigate(['/admin']);
     }
   }
@@ -103,8 +102,6 @@ export class LoginPage implements OnInit {
       this.onSignIn();
     }
   }
-
-
 
   onCancel() {
     this.router.navigate(['/']);

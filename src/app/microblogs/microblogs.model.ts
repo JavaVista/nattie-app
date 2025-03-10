@@ -1,9 +1,9 @@
 export interface Microblog {
   id?: string;
-  userId: string;
+  user_id: string;
   title: string;
   content: string;
-  fileUrls?: string[];
+  file_urls?: string[];
   created_at?: string;
   location?: string;
 }
