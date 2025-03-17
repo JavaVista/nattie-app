@@ -65,9 +65,24 @@ export class LoginPage implements OnInit {
     if (error) {
       this.error.set('Invalid login credentials.');
       this.showAlert('Invalid login credentials.');
-    } else {
-      this.router.navigate(['/admin']);
+      return;
     }
+
+    const userId = data.user?.id;
+    if (userId) {
+      const userExists = await this.supabaseService.checkUserExists(userId);
+
+      if (!userExists) {
+        console.log('User does not exist, inserting...');
+        const { error: insertError } = await this.supabaseService.insertUser(userId, this.email(), "Unknown");
+
+        if (insertError) {
+          console.error('Error inserting missing user:', insertError.message);
+        }
+      }
+    }
+
+    this.router.navigate(['/admin']);
   }
 
   async signOut() {

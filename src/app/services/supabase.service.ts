@@ -21,10 +21,22 @@ export class SupabaseService {
 
   async signUp(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signUp({ email, password });
+
     if (!error) {
       this.authState.set({ user: data.user, error: null });
     }
     return { data, error };
+  }
+
+  async checkUserExists(userId: string): Promise<boolean> {
+    const { data } = await this.supabase
+      .from('users')
+      .select('id')
+      .eq('id', userId)
+      .limit(1)
+      .maybeSingle();
+
+    return data ? true : false;
   }
 
   async insertUser(userId: string, email: string, name: string) {
