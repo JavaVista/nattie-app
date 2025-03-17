@@ -15,8 +15,9 @@
       </ion-thumbnail>
       <ion-label>
         <h2>{{ blog.title }}</h2>
-        <p>{{ blog.content | slice:0:100 }}...</p>
-        <quill-view [content]="blog.content"></quill-view>
+        <!-- <p>{{ blog.content | slice:0:100 }}...</p> -->
+        <p>{{ getPlainTextPreview(blog.content) }}</p>
+        <quill-view [content]="blog.content" format="object" ></quill-view>
       </ion-label>
       <ion-button (click)="editMicroblog(blog)">Edit</ion-button>
       <ion-button color="danger" (click)="deleteMicroblog(blog.id!)">Delete</ion-button>

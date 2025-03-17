@@ -41,6 +41,23 @@ export class AdminPage implements OnInit {
       this.microblogs = [];
     }
   }
+
+  getPlainTextPreview(content: any, maxChars = 50): string {
+    if (!content || !content.ops || !Array.isArray(content.ops)) {
+      return '';
+    }
+    let text = '';
+    for (const op of content.ops) {
+      if (typeof op.insert === 'string') {
+        text += op.insert;
+      }
+      if (text.length >= maxChars) {
+        return text.substring(0, maxChars) + '...';
+      }
+    }
+    return text;
+  }
+
   async deleteMicroblog(id: string) {
     const { error } = await this.supabaseService.deleteMicroblog(id);
     if (!error) {
