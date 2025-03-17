@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, Ion
 import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { CreateMicroblogComponent } from '../create-microblog/create-microblog.component';
+import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-admin',
@@ -12,7 +13,7 @@ import { CreateMicroblogComponent } from '../create-microblog/create-microblog.c
   styleUrls: ['./admin.page.scss'],
   standalone: true,
 
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList, QuillModule]
 })
 export class AdminPage implements OnInit {
   microblogs: Microblog[] = [];
@@ -27,13 +28,19 @@ export class AdminPage implements OnInit {
 
   async loadMicroblogs() {
     const { data, error } = await this.supabaseService.getMicroblogs();
+    console.log(data);
     if (error) {
       console.error('Error loading microblogs:', error.message);
+      this.microblogs = [];
+    } else if (data && data.length > 0) {
+      this.microblogs = data.map(microblog => ({
+        ...microblog,
+        content: microblog.content,
+      }));
     } else {
-      this.microblogs = data || [];
+      this.microblogs = [];
     }
   }
-
   async deleteMicroblog(id: string) {
     const { error } = await this.supabaseService.deleteMicroblog(id);
     if (!error) {

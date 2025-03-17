@@ -31,7 +31,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
     [{ 'color': [] }, { 'background': [] }],
     [{ 'align': [] }],
-    ['link', 'image', 'video'],
+    ['link', 'image'],
     ['clean']
   ];
 
@@ -61,6 +61,14 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     const quillElement = document.querySelector('.ql-editor') as HTMLElement;
     quillElement?.focus();
+
+    const quillInstance = document.querySelector('.ql-container') as any;
+
+    if (quillInstance) {
+      quillInstance.getModule('toolbar').addHandler('image', () => {
+        this.uploadImageFromEditor(quillInstance);
+      });
+    }
   }
 
   updateFormValidity() {
@@ -77,15 +85,37 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
   onEditorChange(event: EditorChangeContent | EditorChangeSelection) {
     if (event.event !== 'text-change') return;
-    // HTML (for storing and rendering rich text later)
+    // HTML & Text (for storing and rendering later)
     const htmlContent = event['editor']['root'].innerHTML;
-
     const plainTextContent = event['editor'].getText().trim();
-    this.form.controls['content'].setValue(plainTextContent);
+    const deltaContent = event['editor'].getContents();
+
+    this.form.controls['content'].setValue(JSON.stringify(deltaContent));
 
     this.form.controls['content'].markAsTouched();
     this.form.controls['content'].markAsDirty();
     this.updateFormValidity();
+  }
+
+  async uploadImageFromEditor(editor: any) {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      const { publicUrl, error } = await this.supabaseService.uploadFile('microblog-media', file);
+      if (error) {
+        console.error('File upload failed:', error.message);
+        return;
+      }
+
+      const range = editor.getSelection();
+      editor.insertEmbed(range.index, 'image', publicUrl);
+    };
   }
 
   handleFileInput(event: Event) {
@@ -94,6 +124,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       this.files = computed(() => Array.from(input.files!));
     }
   }
+
 
   async createMicroblog() {
     if (this.form.invalid) return;
@@ -123,10 +154,12 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       }
     }
 
+    const deltaContent = JSON.parse(this.form.value.content);
+
     const newMicroblog: Microblog = {
       user_id: userId,
       title: this.form.value.title,
-      content: this.form.value.content,
+      content: deltaContent,
       file_urls: fileUrls.length > 0 ? fileUrls : undefined,
       created_at: new Date().toISOString(),
     };
@@ -137,8 +170,8 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     } else {
       console.error('Error saving microblog:', error.message);
     }
-    console.log(' CreateMicroblogComponent 👉 newMicroblog:', newMicroblog);
   }
+
 
   dismiss(success = false) {
     this.modalCtrl.dismiss({ success });
