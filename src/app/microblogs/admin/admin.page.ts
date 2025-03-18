@@ -5,7 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, Ion
 import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { CreateMicroblogComponent } from '../create-microblog/create-microblog.component';
-import { QuillModule } from 'ngx-quill';
+// import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-admin',
@@ -13,7 +13,7 @@ import { QuillModule } from 'ngx-quill';
   styleUrls: ['./admin.page.scss'],
   standalone: true,
 
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList, QuillModule]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList]
 })
 export class AdminPage implements OnInit {
   microblogs: Microblog[] = [];
@@ -88,7 +88,7 @@ export class AdminPage implements OnInit {
     if (blog.file_urls && blog.file_urls.length > 0) {
       return blog.file_urls[0]; // first file as thumbnail
     }
-    return 'https://via.placeholder.com/100'; // Fallback placeholder
+    return 'assets/images/EuroTrip.png'; // Fallback placeholder
   }
 
 }

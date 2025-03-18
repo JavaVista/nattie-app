@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, computed, effect, inject, OnInit, signal, Signal } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonInput, IonHeader, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonToolbar, ModalController, IonProgressBar } from "@ionic/angular/standalone";
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
-import { QuillModule, EditorChangeContent, EditorChangeSelection } from 'ngx-quill';
+import { QuillModule, EditorChangeContent, EditorChangeSelection, QuillEditorComponent } from 'ngx-quill';
+import Quill, {Range} from 'quill';
 
 @Component({
   selector: 'app-create-microblog',
@@ -23,7 +24,9 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   private supabaseService = inject(SupabaseService);
   private formBuilder = inject(FormBuilder);
 
-  toolbarOptions = [
+  @ViewChild(QuillEditorComponent) editorComponent?: QuillEditorComponent;
+
+  private toolbarOptions = [
     ['bold', 'italic', 'underline', 'blockquote'],
     [{ 'list': 'ordered' }, { 'list': 'bullet' }],
     [{ 'script': 'sub' }, { 'script': 'super' }],
@@ -59,16 +62,39 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    const quillElement = document.querySelector('.ql-editor') as HTMLElement;
-    quillElement?.focus();
-
-    const quillInstance = document.querySelector('.ql-container') as any;
-
-    if (quillInstance) {
-      quillInstance.getModule('toolbar').addHandler('image', () => {
-        this.uploadImageFromEditor(quillInstance);
+    if (this.editorComponent) {
+      this.editorComponent.onEditorCreated.subscribe(editor => {
+        this.setupImageHandler(editor);
       });
     }
+  }
+
+  private setupImageHandler(editor: Quill) {
+    const imageHandler = async () => {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.click();
+
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+
+        const { publicUrl, error } = await this.supabaseService.uploadFile('microblog-media', file);
+        if (error) {
+          console.error('File upload failed:', error.message);
+          return;
+        }
+
+        const range: Range | null = editor.getSelection();
+        if (range) {
+          editor.insertEmbed(range.index, 'image', publicUrl);
+          editor.setSelection(range.index + 1);
+        }
+      };
+    };
+
+    (editor.getModule('toolbar') as any).addHandler('image', imageHandler);
   }
 
   updateFormValidity() {
@@ -97,26 +123,26 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     this.updateFormValidity();
   }
 
-  async uploadImageFromEditor(editor: any) {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
+  // async uploadImageFromEditor(editor: any) {
+  //   const input = document.createElement('input');
+  //   input.setAttribute('type', 'file');
+  //   input.setAttribute('accept', 'image/*');
+  //   input.click();
 
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return;
+  //   input.onchange = async () => {
+  //     const file = input.files?.[0];
+  //     if (!file) return;
 
-      const { publicUrl, error } = await this.supabaseService.uploadFile('microblog-media', file);
-      if (error) {
-        console.error('File upload failed:', error.message);
-        return;
-      }
+  //     const { publicUrl, error } = await this.supabaseService.uploadFile('microblog-media', file);
+  //     if (error) {
+  //       console.error('File upload failed:', error.message);
+  //       return;
+  //     }
 
-      const range = editor.getSelection();
-      editor.insertEmbed(range.index, 'image', publicUrl);
-    };
-  }
+  //     const range = editor.getSelection();
+  //     editor.insertEmbed(range.index, 'image', publicUrl);
+  //   };
+  // }
 
   handleFileInput(event: Event) {
     const input = event.target as HTMLInputElement;
