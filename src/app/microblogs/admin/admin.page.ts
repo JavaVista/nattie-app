@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, Ion
 import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { CreateMicroblogComponent } from '../create-microblog/create-microblog.component';
+import { BlogSelectionListComponent } from '../blog-selection-list/blog-selection-list.component';
 // import { QuillModule } from 'ngx-quill';
 
 @Component({
@@ -13,7 +14,7 @@ import { CreateMicroblogComponent } from '../create-microblog/create-microblog.c
   styleUrls: ['./admin.page.scss'],
   standalone: true,
 
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, IonItem, IonThumbnail, IonLabel, IonList]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, BlogSelectionListComponent]
 })
 export class AdminPage implements OnInit {
   microblogs: Microblog[] = [];
@@ -42,22 +43,6 @@ export class AdminPage implements OnInit {
     }
   }
 
-  getPlainTextPreview(content: any, maxChars = 50): string {
-    if (!content || !content.ops || !Array.isArray(content.ops)) {
-      return '';
-    }
-    let text = '';
-    for (const op of content.ops) {
-      if (typeof op.insert === 'string') {
-        text += op.insert;
-      }
-      if (text.length >= maxChars) {
-        return text.substring(0, maxChars) + '...';
-      }
-    }
-    return text;
-  }
-
   async deleteMicroblog(id: string) {
     const { error } = await this.supabaseService.deleteMicroblog(id);
     if (!error) {
@@ -82,13 +67,6 @@ export class AdminPage implements OnInit {
     if (data?.success) {
       await this.loadMicroblogs();
     }
-  }
-
-  getThumbnail(blog: Microblog): string {
-    if (blog.file_urls && blog.file_urls.length > 0) {
-      return blog.file_urls[0]; // first file as thumbnail
-    }
-    return 'assets/images/EuroTrip.png'; // Fallback placeholder
   }
 
 }

@@ -8,20 +8,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let blog of microblogs">
-      <ion-thumbnail slot="start">
-        <img [src]="getThumbnail(blog)" alt="Blog thumbnail" />
-      </ion-thumbnail>
-      <ion-label>
-        <h2>{{ blog.title }}</h2>
-        <!-- <p>{{ blog.content | slice:0:100 }}...</p> -->
-        <p>{{ getPlainTextPreview(blog.content) }}</p>
-        <!-- <quill-view [content]="blog.content" format="object" ></quill-view> -->
-      </ion-label>
-      <ion-button (click)="editMicroblog(blog)">Edit</ion-button>
-      <ion-button color="danger" (click)="deleteMicroblog(blog.id!)">Delete</ion-button>
-    </ion-item>
-  </ion-list>
+
+  <app-blog-selection-list [microblogs]="microblogs" [editMicroblog]="editMicroblog"
+    (deleteMicroblog)="deleteMicroblog($event)">
+  </app-blog-selection-list>
 
 </ion-content>
