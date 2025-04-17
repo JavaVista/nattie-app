@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package us.techno_logic.nattie;
 
 import com.getcapacitor.BridgeActivity;
 
