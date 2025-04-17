@@ -48,16 +48,16 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     borderRadius: '5px'
   };
 
-  constructor() { }
+  constructor() {
+    effect(() => {
+      this.updateFormValidity();
+    });
+  }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
       content: ['', [Validators.required, Validators.minLength(10)]],
-    });
-
-    effect(() => {
-      this.updateFormValidity();
     });
   }
 
