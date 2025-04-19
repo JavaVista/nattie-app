@@ -1,5 +1,5 @@
 
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonMenu, IonContent, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonAvatar, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { SupabaseService } from './services/supabase.service';
@@ -12,7 +12,7 @@ import { settings, home, logIn, logOut } from 'ionicons/icons';
   styleUrls: ['app.component.scss'],
   imports: [RouterLink, IonMenu, IonContent, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonAvatar, IonRouterLink, IonRouterOutlet],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private supabaseService = inject(SupabaseService);
   private router = inject(Router);
   isLoggedIn = this.supabaseService.isLoggedIn;
@@ -21,8 +21,6 @@ export class AppComponent implements OnInit {
   constructor() {
     addIcons({ home, settings, logIn, logOut });
   }
-
-  ngOnInit(): void { }
 
 
 

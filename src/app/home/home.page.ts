@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonItem, IonCard, IonCardHeader, IonCardTitle } from '@ionic/angular/standalone';
@@ -10,12 +10,10 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonList, IonItem, IonCard, IonCardHeader, IonCardTitle],
 })
-export class HomePage implements OnInit {
+export class HomePage {
   trips: any;
 
   constructor() { }
 
-  ngOnInit() {
-  }
 
 }

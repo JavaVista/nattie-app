@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonLabel, IonInput, IonButton, IonButtons, ModalController, IonSpinner, IonText } from '@ionic/angular/standalone';
@@ -12,7 +12,7 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   standalone: true,
   imports: [IonText, IonSpinner, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonItem, IonList, IonLabel, IonInput, IonButton, IonButtons]
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
   name = signal('');
   email = signal('');
   password = signal('');
@@ -25,8 +25,6 @@ export class RegisterComponent implements OnInit {
   private router = inject(Router);
 
   constructor() { }
-
-  ngOnInit() { }
 
   async signUp() {
     this.isLoading.set(true);

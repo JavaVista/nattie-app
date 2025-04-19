@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { Component, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonLabel, IonInput, IonButton, AlertController, IonSpinner, ModalController } from '@ionic/angular/standalone';
@@ -13,7 +13,7 @@ import { RegisterComponent } from '../register/register.component';
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonItem, IonList, IonLabel, IonInput, IonButton, IonSpinner],
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
   email = signal('');
   password = signal('');
   user: any;
@@ -29,9 +29,6 @@ export class LoginPage implements OnInit {
   private modalController = inject(ModalController);
 
   constructor() { }
-
-  ngOnInit() {
-  }
 
   async showAlert(message: string) {
     const alert = await this.alertController.create({

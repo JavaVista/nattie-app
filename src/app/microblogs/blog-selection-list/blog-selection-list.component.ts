@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Microblog } from '../microblogs.model';
 import { IonList, IonItem, IonLabel, IonButton, IonThumbnail } from "@ionic/angular/standalone";
 
@@ -9,14 +9,12 @@ import { IonList, IonItem, IonLabel, IonButton, IonThumbnail } from "@ionic/angu
   standalone: true,
   imports: [IonList, IonItem, IonLabel, IonButton, IonThumbnail]
 })
-export class BlogSelectionListComponent implements OnInit {
+export class BlogSelectionListComponent {
   @Input() microblogs: Microblog[] = [];
   @Input() editMicroblog!: (blog: Microblog) => void;
   @Output() deleteMicroblog = new EventEmitter<string>();
 
   constructor() { }
-
-  ngOnInit() { }
 
   getThumbnail(blog: Microblog): string {
     return blog.file_urls && blog.file_urls.length > 0
