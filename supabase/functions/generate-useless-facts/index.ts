@@ -17,10 +17,13 @@ Deno.serve(async (req) => {
   const apiKey = Deno.env.get('GEMINI_API_KEY');
 
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'API key not configured' }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({ error: 'Your Gemini API key is not configured' }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        status: 500,
+      }
+    );
   }
 
   try {
@@ -39,15 +42,24 @@ Deno.serve(async (req) => {
     const raw = result?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     console.log(' raw:', raw);
 
-    // TODO: Refactor to a 3 bullet prompt
     const facts = raw
       .split('\n')
       .filter(
-        (line) => line.trim().startsWith('-') || line.trim().startsWith('•')
+        (line) =>
+          line.trim().startsWith('-') ||
+          line.trim().startsWith('•') ||
+          /^\d+\.\s+\*\*/.test(line.trim())
       )
-      .map((line) => line.replace(/^[-•]\s*/, '').trim())
+      .map((line) => {
+        return line
+          .replace(/^[-•]\s*/, '')
+          .replace(/^\d+\.\s+\*\*/, '**')
+          .trim();
+      })
       .slice(0, 3);
 
+
+    console.log(' facts:', facts);
     return new Response(JSON.stringify({ facts }), {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -68,5 +80,10 @@ Deno.serve(async (req) => {
     --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
     --header 'Content-Type: application/json' \
     --data '{"name":"Functions"}'
+
+*/
+
+/* 
+const prompt = `Give me 3 useless facts about the location "${location}", specifically the place "${place}"` : ''}. 
 
 */
