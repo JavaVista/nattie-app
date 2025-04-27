@@ -1,3 +1,5 @@
 {
-  "imports": {}
+  "imports": {
+    "../_shared/cors.ts": "../_shared/cors.ts"
+  }
 }

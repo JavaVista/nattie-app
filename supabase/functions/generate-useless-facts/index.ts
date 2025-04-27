@@ -4,27 +4,28 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import { corsHeaders, jsonResponse } from '../_shared/cors.ts';
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS')
+    return new Response(null, { headers: corsHeaders });
+
   const { prompt } = await req.json();
 
-  if (!prompt) {
+  if (!prompt)
     return new Response(JSON.stringify({ error: 'Missing prompt parameter' }), {
-      headers: { 'Content-Type': 'application/json' },
       status: 400,
     });
-  }
+
   const apiKey = Deno.env.get('GEMINI_API_KEY');
 
-  if (!apiKey) {
+  if (!apiKey)
     return new Response(
       JSON.stringify({ error: 'Your Gemini API key is not configured' }),
       {
-        headers: { 'Content-Type': 'application/json' },
         status: 500,
       }
     );
-  }
 
   try {
     const response = await fetch(
@@ -40,34 +41,26 @@ Deno.serve(async (req) => {
 
     const result = await response.json();
     const raw = result?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    console.log(' raw:', raw);
 
     const facts = raw
       .split('\n')
       .filter(
-        (line) =>
-          line.trim().startsWith('-') ||
-          line.trim().startsWith('•') ||
-          /^\d+\.\s+\*\*/.test(line.trim())
+        (bullet) =>
+          bullet.trim().startsWith('-') ||
+          bullet.trim().startsWith('•') ||
+          /^\d+\.\s+\*\*/.test(bullet.trim())
       )
-      .map((line) => {
-        return line
+      .map((bullet) => {
+        return bullet
           .replace(/^[-•]\s*/, '')
           .replace(/^\d+\.\s+\*\*/, '**')
           .trim();
       })
       .slice(0, 3);
 
-
-    console.log(' facts:', facts);
-    return new Response(JSON.stringify({ facts }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: 'Error generating facts' }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 500,
-    });
+    return jsonResponse({ facts });
+  } catch (_) {
+    return jsonResponse({ error: 'Error generating facts.' }, { status: 500 });
   }
 });
 
@@ -83,7 +76,7 @@ Deno.serve(async (req) => {
 
 */
 
-/* 
-const prompt = `Give me 3 useless facts about the location "${location}", specifically the place "${place}"` : ''}. 
+/*
+const prompt = `Give me 3 useless facts about the location "${location}", specifically the place "${place}"` : ''}.
 
 */
