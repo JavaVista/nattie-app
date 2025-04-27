@@ -28,6 +28,26 @@
         </p>
         }
 
+        @if (uselessFacts().length > 0) {
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Useless Facts</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ul>
+              @for (fact of uselessFacts(); track $index) {
+              <li>{{ fact }}</li>
+              }
+            </ul>
+          </ion-card-content>
+        </ion-card>
+        }
+
+        <ion-button expand="block" (click)="generateUselessFacts()" [disabled]="isGeneratingFacts()">
+          🧠 Generate Useless Facts
+        </ion-button>
+
+
         <input type="file" multiple (change)="handleFileInput($event)" />
         @if (files().length > 0) {
         <p>{{ files().length }} files selected.</p>

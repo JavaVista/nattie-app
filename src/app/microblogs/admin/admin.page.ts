@@ -29,7 +29,6 @@ export class AdminPage implements OnInit {
 
   async loadMicroblogs() {
     const { data, error } = await this.supabaseService.getMicroblogs();
-    console.log(data);
     if (error) {
       console.error('Error loading microblogs:', error.message);
       this.microblogs = [];

@@ -14,9 +14,9 @@ export class AiService {
   constructor() {}
 
   generateUselessFacts(location: string, place?: string): Observable<string[]> {
-    const prompt = `Give me 3, useless facts about the location "${location}"${
-      place ? `, specifically about the place "${place}"` : ''
-      }. Format them as bullet points.`;
+    const prompt = `Give me 3, useless concise facts about the location ${location}${
+      place ? `, specifically about the place ${place}` : ''
+    }.`;
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

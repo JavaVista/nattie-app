@@ -1,17 +1,34 @@
 import { AfterViewInit, Component, computed, effect, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonInput, IonHeader, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonToolbar, ModalController, IonProgressBar } from "@ionic/angular/standalone";
+import { IonInput, IonHeader, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonToolbar, ModalController, IonProgressBar, IonCardHeader, IonCardTitle } from "@ionic/angular/standalone";
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
 import { QuillModule, EditorChangeContent, EditorChangeSelection, QuillEditorComponent } from 'ngx-quill';
 import Quill, {Range} from 'quill';
+import { AiService } from 'src/app/services/ai.service';
 
 @Component({
   selector: 'app-create-microblog',
   templateUrl: './create-microblog.component.html',
   styleUrls: ['./create-microblog.component.scss'],
   standalone: true,
-  imports: [IonProgressBar, IonToolbar, IonInput, IonHeader, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonInput, ReactiveFormsModule, QuillModule]
+  imports: [
+    IonProgressBar,
+    IonToolbar,
+    IonInput,
+    IonHeader,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonInput,
+    IonCardHeader,
+    IonCardTitle,
+    ReactiveFormsModule,
+    QuillModule,
+  ],
 })
 export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   form!: FormGroup;
@@ -19,33 +36,36 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   currentUser = computed(() => this.supabaseService.user());
   files = computed<File[]>(() => []);
   uploadProgress = computed(() => 0);
+  uselessFacts = signal<string[]>([]);
+  isGeneratingFacts = signal(false);
 
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
   private formBuilder = inject(FormBuilder);
+  private aiService = inject(AiService);
 
   @ViewChild(QuillEditorComponent) editorComponent?: QuillEditorComponent;
 
   private toolbarOptions = [
     ['bold', 'italic', 'underline', 'blockquote'],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-    [{ 'script': 'sub' }, { 'script': 'super' }],
-    [{ 'indent': '-1' }, { 'indent': '+1' }],
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ script: 'sub' }, { script: 'super' }],
+    [{ indent: '-1' }, { indent: '+1' }],
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ color: [] }, { background: [] }],
+    [{ align: [] }],
     ['link', 'image'],
-    ['clean']
+    ['clean'],
   ];
 
   quillModules = {
-    toolbar: this.toolbarOptions
+    toolbar: this.toolbarOptions,
   };
 
   quillStyles = {
     height: '200px',
     background: 'white',
-    borderRadius: '5px'
+    borderRadius: '5px',
   };
 
   constructor() {
@@ -63,7 +83,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     if (this.editorComponent) {
-      this.editorComponent.onEditorCreated.subscribe(editor => {
+      this.editorComponent.onEditorCreated.subscribe((editor) => {
         this.setupImageHandler(editor);
       });
     }
@@ -80,7 +100,10 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
         const file = input.files?.[0];
         if (!file) return;
 
-        const { publicUrl, error } = await this.supabaseService.uploadFile('microblog-media', file);
+        const { publicUrl, error } = await this.supabaseService.uploadFile(
+          'microblog-media',
+          file
+        );
         if (error) {
           console.error('File upload failed:', error.message);
           return;
@@ -151,6 +174,18 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     }
   }
 
+  async generateUselessFacts() {
+    const title = 'Paris, France';
+    this.isGeneratingFacts.set(true);
+
+    this.aiService.generateUselessFacts(title, 'Eiffel Tower').subscribe({
+      next: (facts) => {
+        this.uselessFacts.set(facts);
+      },
+      error: (err) => console.error('AI Generation error:', err),
+      complete: () => this.isGeneratingFacts.set(false),
+    });
+  }
 
   async createMicroblog() {
     if (this.form.invalid) return;
@@ -158,7 +193,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     const userId = this.currentUser()?.id;
 
     if (!userId) {
-      console.error("User ID is missing! Cannot create microblog.");
+      console.error('User ID is missing! Cannot create microblog.');
       return;
     }
 
@@ -169,14 +204,19 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       let uploadedCount = 0;
 
       for (const file of this.files()) {
-        const { publicUrl, error } = await this.supabaseService.uploadFile('microblog-media', file);
+        const { publicUrl, error } = await this.supabaseService.uploadFile(
+          'microblog-media',
+          file
+        );
         if (error) {
           console.error('File upload failed:', error.message);
           return;
         }
         fileUrls.push(publicUrl!);
         uploadedCount++;
-        this.uploadProgress = computed(() => Math.round((uploadedCount / totalFiles) * 100));
+        this.uploadProgress = computed(() =>
+          Math.round((uploadedCount / totalFiles) * 100)
+        );
       }
     }
 
@@ -186,6 +226,8 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       user_id: userId,
       title: this.form.value.title,
       content: deltaContent,
+      useless_facts:
+        this.uselessFacts().length > 0 ? this.uselessFacts() : undefined,
       file_urls: fileUrls.length > 0 ? fileUrls : undefined,
       created_at: new Date().toISOString(),
     };
@@ -198,10 +240,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   dismiss(success = false) {
     this.modalCtrl.dismiss({ success });
   }
-
-
 }

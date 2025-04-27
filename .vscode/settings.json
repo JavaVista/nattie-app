@@ -24,5 +24,9 @@
   "typescript.preferences.autoImportFileExcludePatterns": [
     "@ionic/angular/common",
     "@ionic/angular"
+  ],
+  "cSpell.words": [
+    "ngsw",
+    "XVCJ"
   ]
 }
