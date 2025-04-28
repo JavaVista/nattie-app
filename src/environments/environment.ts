@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   supabaseUrl: 'YOUR_SUPABASE_PROJECT_URL',
   supabaseAnonKey: 'YOUR_SUPABASE_ANON_PUBLIC_KEY',
+  googlePlacesApiKey: 'YOUR_GOOGLE_PLACES_API_KEY',
 };
 
 /*
