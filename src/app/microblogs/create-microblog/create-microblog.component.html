@@ -19,6 +19,8 @@
         </p>
         }
 
+        <app-location-select (locationSelected)="onLocationSelected($event)"></app-location-select>
+
         <quill-editor (onEditorChanged)="onEditorChange($event)" [modules]="quillModules" [styles]="quillStyles"
           [placeholder]="'Write your content here...'">
         </quill-editor>

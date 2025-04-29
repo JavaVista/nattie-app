@@ -6,6 +6,8 @@ import { Microblog } from '../microblogs.model';
 import { QuillModule, EditorChangeContent, EditorChangeSelection, QuillEditorComponent } from 'ngx-quill';
 import Quill, {Range} from 'quill';
 import { AiService } from 'src/app/services/ai.service';
+import { LocationSelectComponent } from 'src/app/locations/location-select/location-select.component';
+import { Location } from 'src/app/locations/location.model';
 
 @Component({
   selector: 'app-create-microblog',
@@ -28,6 +30,7 @@ import { AiService } from 'src/app/services/ai.service';
     IonCardTitle,
     ReactiveFormsModule,
     QuillModule,
+    LocationSelectComponent,
   ],
 })
 export class CreateMicroblogComponent implements OnInit, AfterViewInit {
@@ -38,6 +41,8 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   uploadProgress = computed(() => 0);
   uselessFacts = signal<string[]>([]);
   isGeneratingFacts = signal(false);
+
+  selectedLocationId = signal<string | null>(null);
 
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
@@ -87,6 +92,10 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
         this.setupImageHandler(editor);
       });
     }
+  }
+
+  onLocationSelected(location: Location) {
+    this.selectedLocationId.set(location.id);
   }
 
   private setupImageHandler(editor: Quill) {

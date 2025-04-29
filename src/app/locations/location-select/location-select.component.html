@@ -1,0 +1,15 @@
+<ion-item>
+  <ion-label>Location</ion-label>
+  <ion-select (ionChange)="onLocationChange($event)" placeholder="Select or Create Location">
+
+    @for (loc of locations(); track loc.id) {
+    <ion-select-option [value]="loc.id">
+      {{ loc.city }}, {{ loc.country }}
+    </ion-select-option>
+    }
+    
+    <ion-select-option value="create">
+      + Create New Location...
+    </ion-select-option>
+  </ion-select>
+</ion-item>

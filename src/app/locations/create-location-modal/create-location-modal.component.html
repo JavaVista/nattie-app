@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Create Location</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-input [value]="searchText()" (ionInput)="onSearchInput($event)"
+      placeholder="Search City or Country..."></ion-input>
+  </ion-item>
+
+  @if (searchText().length > 0) {
+  <ion-list>
+    @for (place of searchResults(); track place.place_id) {
+    <ion-item (click)="selectPlace(place)">
+      {{ place.description }}
+    </ion-item>
+    }
+  </ion-list>
+  }
+
+  @if (photos().length > 0) {
+  <ion-grid>
+    <ion-row>
+      @for (photo of photos(); track $index) {
+      <ion-col size="6">
+        <img [src]="photo" (click)="selectedPhoto.set(photo)" [class.selected]="photo === selectedPhoto()" />
+      </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
+  }
+
+  <ion-button expand="full" (click)="confirm()" [disabled]="!selectedPhoto()">Save Location</ion-button>
+</ion-content>
