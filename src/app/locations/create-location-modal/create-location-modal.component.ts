@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { IonItem, IonHeader, IonTitle, IonToolbar, IonContent, IonInput, IonList, IonGrid, IonRow, IonCol, IonButtons, IonButton } from '@ionic/angular/standalone';
-import { ModalController } from '@ionic/angular';
+import { IonItem, IonHeader, IonTitle, IonToolbar, IonContent, IonInput, IonList, IonGrid, IonRow, IonCol, IonButtons, IonButton, ModalController } from '@ionic/angular/standalone';
 import { GooglePlacesService } from 'src/app/services/google-places.service';
 import { LocationService } from 'src/app/services/location.service';
 import { CommonModule } from '@angular/common';

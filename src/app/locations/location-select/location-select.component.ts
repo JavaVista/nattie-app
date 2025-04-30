@@ -1,8 +1,7 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { LocationService } from 'src/app/services/location.service';
-import { ModalController } from '@ionic/angular';
 import { Location } from '../location.model';
-import { IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { IonItem, IonLabel, IonSelect, IonSelectOption, ModalController } from '@ionic/angular/standalone';
 import { CreateLocationModalComponent } from '../create-location-modal/create-location-modal.component';
 
 @Component({
