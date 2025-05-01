@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { env } from 'src/environments/env';
@@ -8,38 +8,52 @@ import { env } from 'src/environments/env';
 })
 export class GooglePlacesService {
   private http = inject(HttpClient);
-  private apiKey = env.googlePlacesApiKey;
+  private readonly proxyUrl = `${env.supabaseUrl}/functions/v1/places-proxy`;
+
+  private readonly headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${env.supabaseAnonKey}`,
+  });
 
   constructor() {}
 
   autocomplete(input: string) {
-    const params = new HttpParams()
-      .set('input', input)
-      .set('types', '(cities)') // you can change this to 'establishment' if needed for places
-      .set('key', this.apiKey);
-
     return this.http
-      .get<any>(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json',
-        { params }
+      .post<any>(
+        this.proxyUrl,
+        {
+          endpoint: 'autocomplete',
+          input,
+        },
+        { headers: this.headers }
       )
       .pipe(map((res) => res.predictions));
   }
 
   getPlaceDetails(placeId: string) {
-    const params = new HttpParams()
-      .set('place_id', placeId)
-      .set('fields', 'name,photos,address_components,geometry')
-      .set('key', this.apiKey);
-
     return this.http
-      .get<any>('https://maps.googleapis.com/maps/api/place/details/json', {
-        params,
-      })
+      .post<any>(
+        this.proxyUrl,
+        {
+          endpoint: 'details',
+          place_id: placeId,
+        },
+        { headers: this.headers }
+      )
       .pipe(map((res) => res.result));
   }
 
-  getPhotoUrl(photoReference: string, maxWidth = 400) {
-    return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxWidth}&photoreference=${photoReference}&key=${this.apiKey}`;
+  getPhotoBlob(photoReference: string) {
+    return this.http.post(
+      this.proxyUrl,
+      {
+        endpoint: 'photo',
+        photo_reference: photoReference,
+      },
+      {
+        headers: this.headers,
+        responseType: 'blob',
+      }
+    );
   }
 }
