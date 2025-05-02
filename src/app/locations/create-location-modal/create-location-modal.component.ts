@@ -64,7 +64,7 @@ export class CreateLocationModalComponent implements OnInit {
       .subscribe((details) => {
         this.photos.set(
           details.photos?.map((p: any) =>
-            this.googlePlacesService.getPhotoUrl(p.photo_reference)
+            this.googlePlacesService.getPhotoBlob(p.photo_reference)
           ) || []
         );
 
