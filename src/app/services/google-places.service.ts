@@ -12,7 +12,6 @@ export class GooglePlacesService {
 
   private readonly headers = new HttpHeaders({
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${env.supabaseAnonKey}`,
   });
 
   constructor() {}
@@ -43,17 +42,7 @@ export class GooglePlacesService {
       .pipe(map((res) => res.result));
   }
 
-  getPhotoBlob(photoReference: string) {
-    return this.http.post(
-      this.proxyUrl,
-      {
-        endpoint: 'photo',
-        photo_reference: photoReference,
-      },
-      {
-        headers: this.headers,
-        responseType: 'blob',
-      }
-    );
+  getPhotoUrl(photoReference: string, maxWidth = 400) {
+    return `${this.proxyUrl}?endpoint=photo&photo_reference=${photoReference}&maxwidth=${maxWidth}`;
   }
 }

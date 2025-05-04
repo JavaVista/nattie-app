@@ -1,35 +1,110 @@
 // This function acts as a proxy to the Google Places API.
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { corsHeaders, jsonResponse } from '../_shared/cors.ts';
+import { corsHeaders, jsonResponse, imageResponse } from '../_shared/cors.ts';
 
 const GOOGLE_API_KEY = Deno.env.get('GOOGLE_PLACES_API_KEY');
+if (!GOOGLE_API_KEY) {
+  console.error('Missing GOOGLE_PLACES_API_KEY.');
+}
+const PLACES_API_BASE_URL = 'https://maps.googleapis.com/maps/api/place';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('OK', { headers: corsHeaders });
   }
 
-  const { endpoint, input, place_id, photo_reference } = await req.json();
+  if (req.method === 'GET') {
+    const url = new URL(req.url);
+    const endpoint = url.searchParams.get('endpoint');
+    const photo_reference = url.searchParams.get('photo_reference');
+    const maxwidth = url.searchParams.get('maxwidth') || '400';
 
-  let apiUrl = '';
+    if (endpoint === 'photo' && photo_reference) {
+      if (!GOOGLE_API_KEY) {
+        console.error('GET /photo: Missing GOOGLE_PLACES_API_KEY.');
+        return jsonResponse({ error: 'Server configuration error.' }, 500);
+      }
+      const googlePhotoUrl = `${PLACES_API_BASE_URL}/photo?maxwidth=${maxwidth}&photoreference=${photo_reference}&key=${GOOGLE_API_KEY}`;
 
-  if (endpoint === 'autocomplete') {
-    apiUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
-      input
-    )}&types=(cities)&key=${GOOGLE_API_KEY}`;
-  } else if (endpoint === 'details') {
-    apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&fields=name,photos,geometry,address_components&key=${GOOGLE_API_KEY}`;
-  } else if (endpoint === 'photo') {
-    const redirectUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo_reference}&key=${GOOGLE_API_KEY}`;
-    return Response.redirect(redirectUrl, 302);
-  } else {
-    return jsonResponse({ error: 'Invalid endpoint.' }, 400);
+      try {
+        const photoResponse = await fetch(googlePhotoUrl, {
+          redirect: 'follow',
+        });
+
+        if (!photoResponse.ok) {
+          const errorBody = await photoResponse.text();
+          console.error(
+            `Google Photo API error: ${photoResponse.status} ${photoResponse.statusText}. Body: ${errorBody}`
+          );
+          return jsonResponse(
+            { error: 'Failed to fetch photo.' },
+            photoResponse.status
+          );
+        }
+
+        const contentType =
+          photoResponse.headers.get('Content-Type') || 'image/jpeg';
+
+        return imageResponse(photoResponse.body, 200, contentType);
+      } catch (error) {
+        console.error('Error fetching photo from Google:', error);
+        return jsonResponse(
+          { error: 'Internal server error while fetching photo.' },
+          500
+        );
+      }
+    } else {
+      return jsonResponse({ error: 'Invalid GET request parameters.' }, 400);
+    }
   }
 
-  const response = await fetch(apiUrl);
-  const data = await response.json();
+  if (req.method === 'POST') {
+    let body;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error('Error parsing JSON body:', error);
+      return jsonResponse({ error: 'Invalid JSON body provided.' }, 400);
+    }
 
-  return jsonResponse(data);
+    const { endpoint, input, place_id } = body;
+    let apiUrl = '';
+
+    if (!GOOGLE_API_KEY) {
+      console.error('POST request: Missing GOOGLE_PLACES_API_KEY.');
+      return jsonResponse({ error: 'Server configuration error.' }, 500);
+    }
+
+    if (endpoint === 'autocomplete' && typeof input === 'string') {
+      apiUrl = `${PLACES_API_BASE_URL}/autocomplete/json?input=${encodeURIComponent(
+        input
+      )}&types=(cities)&key=${GOOGLE_API_KEY}`;
+    } else if (endpoint === 'details' && typeof place_id === 'string') {
+      apiUrl = `${PLACES_API_BASE_URL}/details/json?place_id=${place_id}&fields=name,photos,geometry,address_components&key=${GOOGLE_API_KEY}`;
+    }
+    else {
+      return jsonResponse(
+        { error: 'Invalid POST endpoint or missing/invalid parameters.' },
+        400
+      );
+    }
+
+    try {
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      const status = response.ok ? 200 : response.status;
+
+      return jsonResponse(data, status);
+    } catch (error) {
+      console.error(`Error fetching from Google API (${endpoint}):`, error);
+      return jsonResponse(
+        { error: `Internal server error during ${endpoint}.` },
+        500
+      );
+    }
+  }
+
+  return jsonResponse({ error: `Method ${req.method} not allowed.` }, 405);
 });
 
 /* To invoke locally:
