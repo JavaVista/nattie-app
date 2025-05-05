@@ -22,11 +22,27 @@ export class LocationService {
   }
 
   async createLocation(location: Partial<Location>) {
+    const existingLocation = this.locations().find(
+      (loc) =>
+        loc.city.toLowerCase() === location.city?.toLowerCase() &&
+        loc.country.toLowerCase() === location.country?.toLowerCase()
+    );
+
+    if (existingLocation) {
+      return { data: existingLocation, error: null };
+    }
+
     const { data, error } = await this.supabase
       .from('locations')
       .insert(location)
       .select()
       .single();
+
+    if (!error && data) {
+      const updatedLocations = [...this.locations(), data as Location];
+      this.locations.set(updatedLocations);
+    }
+
     return { data, error };
   }
 }

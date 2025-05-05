@@ -1,5 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { IonItem, IonHeader, IonTitle, IonToolbar, IonContent, IonInput, IonList, IonGrid, IonRow, IonCol, IonButtons, IonButton, ModalController } from '@ionic/angular/standalone';
+import {
+  IonItem,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonContent,
+  IonInput,
+  IonList,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonButtons,
+  IonButton,
+  ModalController,
+} from '@ionic/angular/standalone';
 import { GooglePlacesService } from 'src/app/services/google-places.service';
 import { LocationService } from 'src/app/services/location.service';
 import { CommonModule } from '@angular/common';
@@ -58,6 +72,13 @@ export class CreateLocationModalComponent implements OnInit {
       });
   }
 
+  isValidLocation(): boolean {
+    const parts = this.searchText().split(',');
+    return (
+      parts.length === 2 && parts[0].trim() !== '' && parts[1].trim() !== ''
+    );
+  }
+
   async selectPlace(place: any) {
     this.googlePlacesService
       .getPlaceDetails(place.place_id)
@@ -87,11 +108,20 @@ export class CreateLocationModalComponent implements OnInit {
       .split(',')
       .map((s) => s.trim());
 
-    const { data } = await this.locationService.createLocation({
+    if (!city || !country || !this.selectedPhoto()) {
+      return;
+    }
+
+    const { data, error } = await this.locationService.createLocation({
       city,
       country,
       photo_url: this.selectedPhoto(),
     });
+
+    if (error) {
+      console.error('Error creating location:', error);
+      return;
+    }
 
     this.modalCtrl.dismiss({ location: data });
   }

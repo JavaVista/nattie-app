@@ -28,12 +28,14 @@
     <ion-row>
       @for (photo of photos(); track $index) {
       <ion-col size="6">
-        <img [src]="photo" (click)="selectedPhoto.set(photo)" [class.selected]="photo === selectedPhoto()" />
+        <img [src]="photo" (click)="selectedPhoto.set(photo)" [class.selected]="photo === selectedPhoto()"
+          class="clickable-photo" />
       </ion-col>
       }
     </ion-row>
   </ion-grid>
   }
 
-  <ion-button expand="full" (click)="confirm()" [disabled]="!selectedPhoto()">Save Location</ion-button>
+  <ion-button expand="full" (click)="confirm()" [disabled]="!selectedPhoto() || !isValidLocation()">Save
+    Location</ion-button>
 </ion-content>

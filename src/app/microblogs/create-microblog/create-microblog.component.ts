@@ -1,10 +1,44 @@
-import { AfterViewInit, Component, computed, effect, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonInput, IonHeader, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonToolbar, ModalController, IonProgressBar, IonCardHeader, IonCardTitle } from "@ionic/angular/standalone";
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  effect,
+  inject,
+  OnInit,
+  signal,
+  Signal,
+  ViewChild,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  IonInput,
+  IonHeader,
+  IonTitle,
+  IonButtons,
+  IonButton,
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonToolbar,
+  ModalController,
+  IonProgressBar,
+  IonCardHeader,
+  IonCardTitle,
+} from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
-import { QuillModule, EditorChangeContent, EditorChangeSelection, QuillEditorComponent } from 'ngx-quill';
-import Quill, {Range} from 'quill';
+import {
+  QuillModule,
+  EditorChangeContent,
+  EditorChangeSelection,
+  QuillEditorComponent,
+} from 'ngx-quill';
+import Quill, { Range } from 'quill';
 import { AiService } from 'src/app/services/ai.service';
 import { LocationSelectComponent } from 'src/app/locations/location-select/location-select.component';
 import { Location } from 'src/app/locations/location.model';
@@ -42,7 +76,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   uselessFacts = signal<string[]>([]);
   isGeneratingFacts = signal(false);
 
-  selectedLocationId = signal<string | null>(null);
+  selectedLocation = signal<Location | null>(null);
 
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
@@ -94,10 +128,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onLocationSelected(location: Location) {
-    this.selectedLocationId.set(location.id);
-  }
-
   private setupImageHandler(editor: Quill) {
     const imageHandler = async () => {
       const input = document.createElement('input');
@@ -130,7 +160,8 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   updateFormValidity() {
-    this.isFormValid.set(this.form.valid);
+    const hasValidLocation = this.selectedLocation() !== null;
+    this.isFormValid.set(this.form.valid && hasValidLocation);
     // For debugging
     // console.log('Form validity updated:', {
     //   valid: this.form.valid,
@@ -139,6 +170,11 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     //   titleValue: this.form.get('title')?.value,
     //   contentValue: this.form.get('content')?.value?.length
     // });
+  }
+
+  onLocationSelected(location: Location | null) {
+    this.selectedLocation.set(location);
+    this.updateFormValidity();
   }
 
   onEditorChange(event: EditorChangeContent | EditorChangeSelection) {
@@ -184,10 +220,18 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   async generateUselessFacts() {
-    const title = 'Paris, France';
+    const location = this.selectedLocation();
+
+    if (!location) {
+      console.warn('No location selected for generating facts');
+      return;
+    }
+
+    const title = `${location.city}, ${location.country}`;
+
     this.isGeneratingFacts.set(true);
 
-    this.aiService.generateUselessFacts(title, 'Eiffel Tower').subscribe({
+    this.aiService.generateUselessFacts(title, location.city).subscribe({
       next: (facts) => {
         this.uselessFacts.set(facts);
       },
@@ -197,7 +241,12 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   async createMicroblog() {
-    if (this.form.invalid) return;
+    if (this.form.invalid || !this.selectedLocation()) {
+      console.error(
+        'Cannot create microblog: form invalid or no location selected'
+      );
+      return;
+    }
 
     const userId = this.currentUser()?.id;
 
@@ -230,11 +279,14 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     }
 
     const deltaContent = JSON.parse(this.form.value.content);
+    const location = this.selectedLocation();
 
     const newMicroblog: Microblog = {
       user_id: userId,
       title: this.form.value.title,
       content: deltaContent,
+      location_id: location?.id,
+      location: location ? `${location.city}, ${location.country}` : undefined,
       useless_facts:
         this.uselessFacts().length > 0 ? this.uselessFacts() : undefined,
       file_urls: fileUrls.length > 0 ? fileUrls : undefined,

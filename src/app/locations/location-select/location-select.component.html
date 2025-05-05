@@ -1,6 +1,7 @@
 <ion-item>
   <ion-label>Location</ion-label>
-  <ion-select (ionChange)="onLocationChange($event)" placeholder="Select or Create Location">
+  <ion-select [value]="selectedLocationId()" (ionChange)="onLocationChange($event)"
+    placeholder="Select or Create Location">
 
     @for (loc of locations(); track loc.id) {
     <ion-select-option [value]="loc.id">

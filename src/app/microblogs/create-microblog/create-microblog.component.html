@@ -20,6 +20,11 @@
         }
 
         <app-location-select (locationSelected)="onLocationSelected($event)"></app-location-select>
+        @if (!selectedLocation()) {
+        <p class="error">
+          Please select a location.
+        </p>
+        }
 
         <quill-editor (onEditorChanged)="onEditorChange($event)" [modules]="quillModules" [styles]="quillStyles"
           [placeholder]="'Write your content here...'">
