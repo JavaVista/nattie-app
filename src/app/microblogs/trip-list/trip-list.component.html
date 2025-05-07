@@ -1,0 +1,12 @@
+<ion-content>
+  <ion-list>
+    @for (trip of uniqueTrips(); track $index) {
+    <ion-card>
+      <img [src]="trip.photoUrl" alt="Trip to {{ trip.country }}" class="trip-image" />
+      <ion-card-header class="overlay">
+        <ion-card-title class="title-text">Trip to {{ trip.country }}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    }
+  </ion-list>
+</ion-content>

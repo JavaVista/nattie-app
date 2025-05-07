@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   IonItem,
   IonHeader,
@@ -39,7 +39,7 @@ import { CommonModule } from '@angular/common';
     CommonModule,
   ],
 })
-export class CreateLocationModalComponent implements OnInit {
+export class CreateLocationModalComponent {
   private modalCtrl = inject(ModalController);
   private googlePlacesService = inject(GooglePlacesService);
   private locationService = inject(LocationService);
@@ -50,8 +50,6 @@ export class CreateLocationModalComponent implements OnInit {
   searchText = signal('');
 
   constructor() {}
-
-  ngOnInit() {}
 
   onSearchInput(event: Event) {
     const input = event.target as HTMLIonInputElement;
