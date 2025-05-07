@@ -8,6 +8,16 @@
 </ion-header>
 
 <ion-content>
+  @if (loading()) {
+  <div class="loading-container">
+    <ion-spinner name="circular"></ion-spinner>
+    <p>Loading trips...</p>
+  </div>
+  } @else if (trips().length === 0) {
+  <div class="empty-state">
+    <p>No trips available.</p>
+  </div>
+  } @else {
   <app-trip-list [locations]="trips()"></app-trip-list>
+  }
 </ion-content>
-

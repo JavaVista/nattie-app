@@ -1,6 +1,19 @@
-import { Component, computed, Input, Signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  Input,
+  OnChanges,
+  signal,
+  SimpleChanges,
+} from '@angular/core';
 import { TripCard } from '../trip-list.model';
-import {IonContent, IonList, IonCard, IonCardHeader, IonCardTitle } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonList,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-trip-list',
@@ -9,19 +22,28 @@ import {IonContent, IonList, IonCard, IonCardHeader, IonCardTitle } from '@ionic
   standalone: true,
   imports: [IonContent, IonList, IonCard, IonCardHeader, IonCardTitle],
 })
-export class TripListComponent {
+export class TripListComponent implements OnChanges {
   @Input({ required: true }) locations!: TripCard[];
+  tripLocations = signal<TripCard[]>([]);
 
-  uniqueTrips: Signal<TripCard[]> = computed(() => {
+  uniqueTrips = computed(() => {
     const uniqueMap = new Map<string, TripCard>();
-    this.locations?.forEach((loc) => {
+
+    this.tripLocations().forEach((loc) => {
       if (!uniqueMap.has(loc.country)) {
         uniqueMap.set(loc.country, loc);
       }
     });
+
     return [...uniqueMap.values()];
   });
 
-  constructor() { }
+  constructor() {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['locations']) {
+      console.log('TripListComponent received new locations:', this.locations);
+      this.tripLocations.set(this.locations);
+    }
+  }
 }

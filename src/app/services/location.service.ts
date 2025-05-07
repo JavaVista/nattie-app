@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'src/environments/env';
 import { Location } from '../locations/location.model';
@@ -9,15 +9,34 @@ import { Location } from '../locations/location.model';
 export class LocationService {
   private supabase: SupabaseClient;
   locations = signal<Location[]>([]);
+  loading = signal<boolean>(false);
+  error = signal<string | null>(null);
 
   constructor() {
     this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
   }
 
   async fetchLocations() {
-    const { data, error } = await this.supabase.from('locations').select('*');
-    if (!error) {
+    try {
+      this.loading.set(true);
+      this.error.set(null);
+
+      const { data, error } = await this.supabase.from('locations').select('*');
+
+      if (error) {
+        throw error;
+      }
+
       this.locations.set(data as Location[]);
+      return data;
+    } catch (err) {
+      console.error('Error fetching locations:', err);
+      this.error.set(
+        err instanceof Error ? err.message : 'Unknown error occurred'
+      );
+      return [];
+    } finally {
+      this.loading.set(false);
     }
   }
 

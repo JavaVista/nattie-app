@@ -1,6 +1,14 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonButtons,
+  IonMenuButton,
+  IonSpinner,
+} from '@ionic/angular/standalone';
 import { TripCard } from '../microblogs/trip-list.model';
 import { LocationService } from '../services/location.service';
 import { TripListComponent } from '../microblogs/trip-list/trip-list.component';
@@ -18,27 +26,39 @@ import { TripListComponent } from '../microblogs/trip-list/trip-list.component';
     FormsModule,
     IonButtons,
     IonMenuButton,
-    TripListComponent
-],
+    IonSpinner,
+    TripListComponent,
+  ],
 })
 export class HomePage implements OnInit {
   trips = signal<TripCard[]>([]);
   private locationService = inject(LocationService);
+  loading = signal<boolean>(true);
 
   constructor() {}
 
-  async ngOnInit() {
-    await this.locationService.fetchLocations();
-
-    const locations = this.locationService.locations();
-    if (locations.length > 0) {
-      this.trips.set(
-        locations.map((loc) => ({
-          country: loc.country,
-          photoUrl: loc.photo_url,
-        }))
-      );
-    }
+  ngOnInit() {
+    this.fetchLocationData();
   }
 
+  private async fetchLocationData() {
+    try {
+      this.loading.set(true);
+      await this.locationService.fetchLocations();
+
+      const locations = this.locationService.locations();
+
+      if (locations.length > 0) {
+        const mappedTrips = locations.map((loc) => ({
+          country: loc.country,
+          photoUrl: loc.photo_url,
+        }));
+        this.trips.set(mappedTrips);
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    } finally {
+      this.loading.set(false);
+    }
+  }
 }
