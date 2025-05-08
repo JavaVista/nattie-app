@@ -1,6 +1,4 @@
 import { Component, ViewChild, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonLabel, IonInput, IonButton, AlertController, IonSpinner, ModalController } from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Router } from '@angular/router';
@@ -11,7 +9,7 @@ import { RegisterComponent } from '../register/register.component';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonItem, IonList, IonLabel, IonInput, IonButton, IonSpinner],
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonLabel, IonInput, IonButton, IonSpinner],
 })
 export class LoginPage {
   email = signal('');

@@ -16,7 +16,6 @@ import {
 } from '@ionic/angular/standalone';
 import { GooglePlacesService } from 'src/app/services/google-places.service';
 import { LocationService } from 'src/app/services/location.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-create-location-modal',
@@ -36,7 +35,6 @@ import { CommonModule } from '@angular/common';
     IonCol,
     IonButtons,
     IonButton,
-    CommonModule,
   ],
 })
 export class CreateLocationModalComponent {

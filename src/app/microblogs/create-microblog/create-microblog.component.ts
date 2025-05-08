@@ -6,7 +6,6 @@ import {
   inject,
   OnInit,
   signal,
-  Signal,
   ViewChild,
 } from '@angular/core';
 import {

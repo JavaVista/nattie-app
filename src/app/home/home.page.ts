@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
@@ -23,7 +22,6 @@ import { TripListComponent } from '../microblogs/trip-list/trip-list.component';
     IonHeader,
     IonTitle,
     IonToolbar,
-    FormsModule,
     IonButtons,
     IonMenuButton,
     IonSpinner,

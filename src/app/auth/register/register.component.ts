@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,7 +9,7 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
   standalone: true,
-  imports: [IonText, IonSpinner, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonItem, IonList, IonLabel, IonInput, IonButton, IonButtons]
+  imports: [IonText, IonSpinner, IonContent, IonHeader, IonTitle, IonToolbar,  FormsModule, IonItem, IonList, IonLabel, IonInput, IonButton, IonButtons]
 })
 export class RegisterComponent {
   name = signal('');
