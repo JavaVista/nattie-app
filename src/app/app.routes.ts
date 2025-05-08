@@ -18,4 +18,8 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () => import('./microblogs/admin/admin.page').then( m => m.AdminPage)
   },
+  {
+    path: 'country-blog-list',
+    loadComponent: () => import('./microblogs/country-blog-list/country-blog-list.page').then( m => m.CountryBlogListPage)
+  },
 ];

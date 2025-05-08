@@ -6,7 +6,7 @@ export interface Microblog {
   useless_facts?: string[];
   file_urls?: string[];
   created_at?: string;
-  location?: string;
+  country?: string;
   location_id?: string;
   place_id?: string;
 }
