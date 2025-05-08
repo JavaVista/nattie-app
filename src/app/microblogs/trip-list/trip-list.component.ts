@@ -7,6 +7,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { TripCard } from '../trip-list.model';
+import { RouterModule } from '@angular/router';
 import {
   IonContent,
   IonList,
@@ -20,7 +21,14 @@ import {
   templateUrl: './trip-list.component.html',
   styleUrls: ['./trip-list.component.scss'],
   standalone: true,
-  imports: [IonContent, IonList, IonCard, IonCardHeader, IonCardTitle],
+  imports: [
+    IonContent,
+    IonList,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    RouterModule,
+  ],
 })
 export class TripListComponent implements OnChanges {
   @Input({ required: true }) locations!: TripCard[];

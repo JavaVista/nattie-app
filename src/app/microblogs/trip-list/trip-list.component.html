@@ -1,12 +1,16 @@
 <ion-content>
   <ion-list>
     @for (trip of uniqueTrips(); track trip.country) {
-    <ion-card>
+    <ion-card [routerLink]="['/trip', trip.country]">
       <img [src]="trip.photoUrl" alt="Trip to {{ trip.country }}" class="trip-image" />
       <ion-card-header class="overlay">
         <ion-card-title class="title-text">Trip to {{ trip.country }}</ion-card-title>
       </ion-card-header>
     </ion-card>
+    } @empty {
+    <div class="empty-state">
+      <p>No trips to display</p>
+    </div>
     }
   </ion-list>
 </ion-content>

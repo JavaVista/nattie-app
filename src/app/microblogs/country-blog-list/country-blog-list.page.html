@@ -1,9 +1,24 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>countryBlogList</ion-title>
+    <ion-title>Trip to {{ country() }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
+  @if (loading()) {
+  <div class="loading-container">
+    <ion-spinner name="circular"></ion-spinner>
+    <p>Loading blogs...</p>
+  </div>
+  } @else if (error()) {
+  <div class="error-container">
+    <p>{{ error() }}</p>
+  </div>
+  } @else if (blogs().length === 0) {
+  <div class="empty-state">
+    <p>No blogs found for {{ country() }}</p>
+  </div>
+  } @else {
+  <app-blog-selection-list [microblogs]="blogs()" [isAdminView]="false"></app-blog-selection-list>
+  }
 </ion-content>
