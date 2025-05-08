@@ -286,7 +286,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       title: this.form.value.title,
       content: deltaContent,
       location_id: location?.id,
-      location: location ? `${location.city}, ${location.country}` : undefined,
+      country: location?.country,
       useless_facts:
         this.uselessFacts().length > 0 ? this.uselessFacts() : undefined,
       file_urls: fileUrls.length > 0 ? fileUrls : undefined,
