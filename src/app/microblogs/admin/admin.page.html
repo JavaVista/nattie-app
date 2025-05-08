@@ -10,7 +10,7 @@
 <ion-content>
 
   <app-blog-selection-list [microblogs]="microblogs" [editMicroblog]="editMicroblog"
-    (deleteMicroblog)="deleteMicroblog($event)">
+    (deleteMicroblog)="deleteMicroblog($event)" [isAdminView]="true">
   </app-blog-selection-list>
 
 </ion-content>

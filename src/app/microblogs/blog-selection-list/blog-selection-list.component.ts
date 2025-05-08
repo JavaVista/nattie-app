@@ -7,14 +7,15 @@ import { IonList, IonItem, IonLabel, IonButton, IonThumbnail } from "@ionic/angu
   templateUrl: './blog-selection-list.component.html',
   styleUrls: ['./blog-selection-list.component.scss'],
   standalone: true,
-  imports: [IonList, IonItem, IonLabel, IonButton, IonThumbnail]
+  imports: [IonList, IonItem, IonLabel, IonButton, IonThumbnail],
 })
 export class BlogSelectionListComponent {
   @Input() microblogs: Microblog[] = [];
   @Input() editMicroblog!: (blog: Microblog) => void;
   @Output() deleteMicroblog = new EventEmitter<string>();
+  @Input() isAdminView = false;
 
-  constructor() { }
+  constructor() {}
 
   getThumbnail(blog: Microblog): string {
     return blog.file_urls && blog.file_urls.length > 0
@@ -38,5 +39,4 @@ export class BlogSelectionListComponent {
   onDelete(id: Microblog['id']) {
     this.deleteMicroblog.emit(id);
   }
-
 }
