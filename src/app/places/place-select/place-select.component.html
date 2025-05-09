@@ -1,3 +1,14 @@
-<p>
-  place-select works!
-</p>
+<ion-item>
+  <ion-label>Landmark (Optional)</ion-label>
+  <ion-select [value]="selectedPlaceId()" (ionChange)="onPlaceChange($event)" placeholder="Select or Create Place">
+    @for (plc of places(); track plc.id) {
+    <ion-select-option [value]="plc.id">
+      {{ plc.place_name }}
+    </ion-select-option>
+    }
+
+    <ion-select-option value="create">
+      🗼 Create New Place...
+    </ion-select-option>
+  </ion-select>
+</ion-item>
