@@ -55,6 +55,9 @@
         </ion-button>
 
 
+        <app-place-select (placeSelected)="onPlaceSelected($event!)"></app-place-select>
+
+
         <input type="file" multiple (change)="handleFileInput($event)" />
         @if (files().length > 0) {
         <p>{{ files().length }} files selected.</p>

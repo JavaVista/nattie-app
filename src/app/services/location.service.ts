@@ -9,6 +9,7 @@ import { Location } from '../locations/location.model';
 export class LocationService {
   private supabase: SupabaseClient;
   locations = signal<Location[]>([]);
+  selectedLocation = signal<Location | null>(null);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -63,5 +64,13 @@ export class LocationService {
     }
 
     return { data, error };
+  }
+
+  setSelectedLocation(location: Location) {
+    this.selectedLocation.set(location);
+  }
+
+  getSelectedLocation(): Location | null {
+    return this.selectedLocation();
   }
 }

@@ -1,3 +1,41 @@
-<p>
-  create-place-modal works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Create Place</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-input [value]="searchText()" (ionInput)="onSearchInput($event)"
+      placeholder="Search Landmark or Place..."></ion-input>
+  </ion-item>
+
+  @if (searchText().length > 0) {
+  <ion-list>
+    @for (place of searchResults(); track place.place_id) {
+    <ion-item (click)="selectPlace(place)">
+      {{ place.description }}
+    </ion-item>
+    }
+  </ion-list>
+  }
+
+  @if (photos().length > 0) {
+  <ion-grid>
+    <ion-row>
+      @for (photo of photos(); track $index) {
+      <ion-col size="6">
+        <img [src]="photo" (click)="selectedPhoto.set(photo)" [class.selected]="photo === selectedPhoto()"
+          class="clickable-photo" />
+      </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
+  }
+
+  <ion-button expand="full" (click)="confirm()" [disabled]="!selectedPhoto() || !isValidPlace()">Save
+    Place</ion-button>
+</ion-content>

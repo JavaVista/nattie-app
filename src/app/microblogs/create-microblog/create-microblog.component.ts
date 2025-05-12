@@ -41,6 +41,8 @@ import Quill, { Range } from 'quill';
 import { AiService } from 'src/app/services/ai.service';
 import { LocationSelectComponent } from 'src/app/locations/location-select/location-select.component';
 import { Location } from 'src/app/locations/location.model';
+import { PlaceSelectComponent } from 'src/app/places/place-select/place-select.component';
+import { Place } from 'src/app/places/place.model';
 
 @Component({
   selector: 'app-create-microblog',
@@ -64,6 +66,7 @@ import { Location } from 'src/app/locations/location.model';
     ReactiveFormsModule,
     QuillModule,
     LocationSelectComponent,
+    PlaceSelectComponent,
   ],
 })
 export class CreateMicroblogComponent implements OnInit, AfterViewInit {
@@ -76,6 +79,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   isGeneratingFacts = signal(false);
 
   selectedLocation = signal<Location | null>(null);
+  selectedPlaceId = signal<string | null>(null);
 
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
@@ -190,6 +194,10 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     this.updateFormValidity();
   }
 
+  onPlaceSelected(place: Place) {
+    this.selectedPlaceId.set(place.id);
+  }
+
   // async uploadImageFromEditor(editor: any) {
   //   const input = document.createElement('input');
   //   input.setAttribute('type', 'file');
@@ -211,13 +219,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   //   };
   // }
 
-  handleFileInput(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files) {
-      this.files = computed(() => Array.from(input.files!));
-    }
-  }
-
   async generateUselessFacts() {
     const location = this.selectedLocation();
 
@@ -237,6 +238,13 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       error: (err) => console.error('AI Generation error:', err),
       complete: () => this.isGeneratingFacts.set(false),
     });
+  }
+
+  handleFileInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.files = computed(() => Array.from(input.files!));
+    }
   }
 
   async createMicroblog() {

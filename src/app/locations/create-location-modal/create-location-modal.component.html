@@ -15,9 +15,9 @@
 
   @if (searchText().length > 0) {
   <ion-list>
-    @for (place of searchResults(); track place.place_id) {
-    <ion-item (click)="selectPlace(place)">
-      {{ place.description }}
+    @for (location of searchResults(); track location.place_id) {
+    <ion-item (click)="selectLocation(location)">
+      {{ location.description }}
     </ion-item>
     }
   </ion-list>

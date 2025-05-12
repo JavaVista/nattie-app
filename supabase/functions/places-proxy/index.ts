@@ -76,13 +76,36 @@ Deno.serve(async (req) => {
     }
 
     if (endpoint === 'autocomplete' && typeof input === 'string') {
-      apiUrl = `${PLACES_API_BASE_URL}/autocomplete/json?input=${encodeURIComponent(
-        input
-      )}&types=(cities)&key=${GOOGLE_API_KEY}`;
+      const searchType = body.type || '';
+      const location = body.location || '';
+      let queryParams = `input=${encodeURIComponent(input)}`;
+
+      // query with different types based on request
+      if (searchType === 'cities') {
+        queryParams += '&types=(cities)';
+      } else if (searchType === 'establishment') {
+        queryParams += '&types=establishment';
+      } else if (searchType === 'tourist_attraction') {
+        queryParams += '&types=tourist_attraction';
+      } else if (searchType === 'point_of_interest') {
+        queryParams += '&types=point_of_interest';
+      } else if (searchType === 'landmark') {
+        queryParams += '&types=landmark';
+      }
+
+      // location bias if provided
+      if (
+        location &&
+        typeof location.lat === 'number' &&
+        typeof location.lng === 'number'
+      ) {
+        queryParams += `&location=${location.lat},${location.lng}&radius=50000`;
+      }
+
+      apiUrl = `${PLACES_API_BASE_URL}/autocomplete/json?${queryParams}&key=${GOOGLE_API_KEY}`;
     } else if (endpoint === 'details' && typeof place_id === 'string') {
       apiUrl = `${PLACES_API_BASE_URL}/details/json?place_id=${place_id}&fields=name,photos,geometry,address_components&key=${GOOGLE_API_KEY}`;
-    }
-    else {
+    } else {
       return jsonResponse(
         { error: 'Invalid POST endpoint or missing/invalid parameters.' },
         400

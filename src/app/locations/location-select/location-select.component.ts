@@ -14,8 +14,10 @@ import {
   IonSelect,
   IonSelectOption,
   ModalController,
+  SelectChangeEventDetail,
 } from '@ionic/angular/standalone';
 import { CreateLocationModalComponent } from '../create-location-modal/create-location-modal.component';
+import { LocationCoordinatesService } from 'src/app/services/location-coordinates.service';
 
 @Component({
   selector: 'app-location-select',
@@ -26,6 +28,8 @@ import { CreateLocationModalComponent } from '../create-location-modal/create-lo
 })
 export class LocationSelectComponent implements OnInit {
   private locationService = inject(LocationService);
+  private coordsService = inject(LocationCoordinatesService);
+
   private modalCtrl = inject(ModalController);
 
   @Output() locationSelected = new EventEmitter<Location | null>();
@@ -39,7 +43,7 @@ export class LocationSelectComponent implements OnInit {
     this.locationService.fetchLocations();
   }
 
-  async onLocationChange(event: any) {
+  async onLocationChange(event: CustomEvent<SelectChangeEventDetail>) {
     const value = event.detail.value;
     if (value === 'create') {
       this.selectedLocationId.set(null);
@@ -57,7 +61,7 @@ export class LocationSelectComponent implements OnInit {
         this.selectedLocationId.set(data.location.id);
         this.locationSelected.emit(data.location);
       } else {
-        const selectElement = event.target;
+        const selectElement = event.target as HTMLIonSelectElement;
         if (selectElement) {
           selectElement.value = null;
         }
@@ -67,9 +71,11 @@ export class LocationSelectComponent implements OnInit {
       if (selectedLocation) {
         this.selectedLocationId.set(selectedLocation.id);
         this.locationSelected.emit(selectedLocation);
+        this.coordsService.clearCoordinates();
       } else {
         this.selectedLocationId.set(null);
         this.locationSelected.emit(null);
+        this.coordsService.clearCoordinates();
       }
     }
   }

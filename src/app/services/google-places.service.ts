@@ -16,16 +16,27 @@ export class GooglePlacesService {
 
   constructor() {}
 
-  autocomplete(input: string) {
+  autocomplete(
+    input: string,
+    type?: string,
+    locationCoords?: { lat: number; lng: number }
+  ) {
+    const payload: any = {
+      endpoint: 'autocomplete',
+      input,
+    };
+
+    if (type) {
+      payload.type = type;
+    }
+
+    // location coordinates if provided
+    if (locationCoords) {
+      payload.location = locationCoords;
+    }
+
     return this.http
-      .post<any>(
-        this.proxyUrl,
-        {
-          endpoint: 'autocomplete',
-          input,
-        },
-        { headers: this.headers }
-      )
+      .post<any>(this.proxyUrl, payload, { headers: this.headers })
       .pipe(map((res) => res.predictions));
   }
 
@@ -39,7 +50,25 @@ export class GooglePlacesService {
         },
         { headers: this.headers }
       )
-      .pipe(map((res) => res.result));
+      .pipe(
+        map((res) => {
+          const result = res.result;
+
+          // get coordinates if they exist
+          let coordinates = null;
+          if (result.geometry?.location) {
+            coordinates = {
+              lat: result.geometry.location.lat,
+              lng: result.geometry.location.lng,
+            };
+          }
+
+          return {
+            ...result,
+            coordinates,
+          };
+        })
+      );
   }
 
   getPhotoUrl(photoReference: string, maxWidth = 400) {
