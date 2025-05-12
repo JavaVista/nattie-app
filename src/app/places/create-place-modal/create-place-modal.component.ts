@@ -88,7 +88,7 @@ export class CreatePlaceModalComponent implements OnInit {
       .subscribe((details) => {
         this.photos.set(
           details.photos?.map((p: any) =>
-            this.googlePlacesService.getPhotoUrl(p.photoReference)
+            this.googlePlacesService.getPhotoUrl(p.photo_reference)
           ) || []
         );
         const landmark = details.name;

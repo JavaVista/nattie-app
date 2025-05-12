@@ -79,7 +79,8 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   isGeneratingFacts = signal(false);
 
   selectedLocation = signal<Location | null>(null);
-  selectedPlaceId = signal<string | null>(null);
+  selectedPlace = signal<string | null>(null);
+
 
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
@@ -194,8 +195,8 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     this.updateFormValidity();
   }
 
-  onPlaceSelected(place: Place) {
-    this.selectedPlaceId.set(place.id);
+  onPlaceSelected(place: Place | null) {
+    this.selectedPlace.set(place?.place_name ?? null);
   }
 
   // async uploadImageFromEditor(editor: any) {
@@ -220,18 +221,20 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   // }
 
   async generateUselessFacts() {
-    const location = this.selectedLocation();
+    const locationSelected = this.selectedLocation();
+    console.log(' CreateMicroblogComponent 👉 locationSelected:', locationSelected);
 
-    if (!location) {
+    if (!locationSelected) {
       console.warn('No location selected for generating facts');
       return;
     }
 
-    const title = `${location.city}, ${location.country}`;
+    const location = `${locationSelected.city}, ${locationSelected.country}`;
+    const place = this.selectedPlace() || undefined;
 
     this.isGeneratingFacts.set(true);
 
-    this.aiService.generateUselessFacts(title, location.city).subscribe({
+    this.aiService.generateUselessFacts(location, place).subscribe({
       next: (facts) => {
         this.uselessFacts.set(facts);
       },
@@ -298,6 +301,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
         this.uselessFacts().length > 0 ? this.uselessFacts() : undefined,
       file_urls: fileUrls.length > 0 ? fileUrls : undefined,
       created_at: new Date().toISOString(),
+      place_id: this.selectedPlace() ?? undefined
     };
 
     const { error } = await this.supabaseService.createMicroblog(newMicroblog);
