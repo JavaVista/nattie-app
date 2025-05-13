@@ -79,7 +79,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   isGeneratingFacts = signal(false);
 
   selectedLocation = signal<Location | null>(null);
-  selectedPlace = signal<string | null>(null);
+  selectedPlace = signal<Place | null>(null);
 
 
   private modalCtrl = inject(ModalController);
@@ -196,7 +196,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   onPlaceSelected(place: Place | null) {
-    this.selectedPlace.set(place?.place_name ?? null);
+    this.selectedPlace.set(place);
   }
 
   // async uploadImageFromEditor(editor: any) {
@@ -222,7 +222,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
   async generateUselessFacts() {
     const locationSelected = this.selectedLocation();
-    console.log(' CreateMicroblogComponent 👉 locationSelected:', locationSelected);
+    const placeSelected = this.selectedPlace();
 
     if (!locationSelected) {
       console.warn('No location selected for generating facts');
@@ -230,7 +230,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     }
 
     const location = `${locationSelected.city}, ${locationSelected.country}`;
-    const place = this.selectedPlace() || undefined;
+    const place =  placeSelected?.place_name;
 
     this.isGeneratingFacts.set(true);
 
@@ -290,6 +290,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
     const deltaContent = JSON.parse(this.form.value.content);
     const location = this.selectedLocation();
+    const place = this.selectedPlace();
 
     const newMicroblog: Microblog = {
       user_id: userId,
@@ -301,7 +302,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
         this.uselessFacts().length > 0 ? this.uselessFacts() : undefined,
       file_urls: fileUrls.length > 0 ? fileUrls : undefined,
       created_at: new Date().toISOString(),
-      place_id: this.selectedPlace() ?? undefined
+      place_id: place?.id
     };
 
     const { error } = await this.supabaseService.createMicroblog(newMicroblog);

@@ -1,0 +1,16 @@
+.clickable-photo {
+  cursor: pointer;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.selected {
+  border: 3px solid var(--ion-color-primary);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}

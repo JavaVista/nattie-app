@@ -49,6 +49,7 @@ export class CreatePlaceModalComponent implements OnInit {
   selectedPhoto = signal<string>('');
   searchText = signal('');
 
+  @Input() locationId?: string;
   @Input() locationCoordinates: { lat: number; lng: number } | null = null;
 
   constructor() {}
@@ -105,7 +106,7 @@ export class CreatePlaceModalComponent implements OnInit {
     const { data, error } = await this.placeService.createPlace({
       place_name: place,
       photo_url: this.selectedPhoto(),
-    });
+    }, this.locationId);
 
     if (error) {
       console.error('Error creating place:', error);

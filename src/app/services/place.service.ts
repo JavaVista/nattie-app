@@ -1,17 +1,18 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'src/environments/env';
 import { Place } from '../places/place.model';
-
+import { LocationService } from './location.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlaceService {
-  private supabase: SupabaseClient
+  private supabase: SupabaseClient;
   places = signal<Place[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+  private locationService = inject(LocationService);
 
   constructor() {
     this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
@@ -38,19 +39,28 @@ export class PlaceService {
     }
   }
 
-  async createPlace(place: Partial<Place>) {
+  async createPlace(place: Partial<Place>, locationId?: string) {
     const existingPlace = this.places().find(
-      (loc) =>
-        loc.place_name.toLowerCase() === place.place_name?.toLowerCase()
+      (loc) => loc.place_name.toLowerCase() === place.place_name?.toLowerCase()
     );
 
     if (existingPlace) {
       return { data: existingPlace, error: null };
     }
 
+    const finalLocationId =
+      locationId || this.locationService.getSelectedLocation()?.id;
+
+    const placeWithLocation: Partial<Place> = {
+      ...place,
+      location_id: finalLocationId,
+    };
+
+    console.log(placeWithLocation)
+
     const { data, error } = await this.supabase
       .from('places')
-      .insert(place)
+      .insert(placeWithLocation)
       .select()
       .single();
 

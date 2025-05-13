@@ -2,6 +2,7 @@ import {
   Component,
   EventEmitter,
   inject,
+  Input,
   OnInit,
   Output,
   signal,
@@ -31,6 +32,7 @@ export class PlaceSelectComponent implements OnInit {
 
   private modalCtrl = inject(ModalController);
 
+  @Input() selectedLocationId?: string;
   @Output() placeSelected = new EventEmitter<Place | null>();
 
   selectedPlaceId = signal<string | null>(null);
@@ -50,6 +52,9 @@ export class PlaceSelectComponent implements OnInit {
 
       const modal = await this.modalCtrl.create({
         component: CreatePlaceModalComponent,
+        componentProps: {
+          locationId: this.selectedLocationId,
+        },
       });
       await modal.present();
 

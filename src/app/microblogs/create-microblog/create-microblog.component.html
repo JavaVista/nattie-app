@@ -54,9 +54,14 @@
           🧠 Generate Useless Facts
         </ion-button>
 
-
-        <app-place-select (placeSelected)="onPlaceSelected($event)"></app-place-select>
-
+        <div>
+          <app-place-select (placeSelected)="onPlaceSelected($event)" [attr.disabled]="!selectedLocation()">
+          </app-place-select>
+          @if (!selectedLocation()) {
+          <small class="text-warning">
+            Please select a location first to enable place selection </small>
+          }
+        </div>
 
         <input type="file" multiple (change)="handleFileInput($event)" />
         @if (files().length > 0) {
