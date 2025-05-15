@@ -1,7 +1,9 @@
 <ion-item>
   <ion-label>Place (Optional)</ion-label>
-  <ion-select [value]="selectedPlaceId()" (ionChange)="onPlaceChange($event)" placeholder="Select or Create Place (optional)">
-    @for (place of places(); track place.id) {
+  <ion-select [value]="selectedPlaceId()" (ionChange)="onPlaceChange($event)"
+    placeholder="Select or Create Place (optional)" [disabled]="!selectedLocationId">
+
+    @for (place of filteredPlaces(); track place.id) {
     <ion-select-option [value]="place.id">
       {{ place.place_name }}
     </ion-select-option>

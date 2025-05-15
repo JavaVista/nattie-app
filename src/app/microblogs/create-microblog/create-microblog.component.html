@@ -54,12 +54,15 @@
           🧠 Generate Useless Facts
         </ion-button>
 
-        <div>
-          <app-place-select (placeSelected)="onPlaceSelected($event)" [attr.disabled]="!selectedLocation()">
+        <div class="place-selection-container">
+          <app-place-select (placeSelected)="onPlaceSelected($event)" [selectedLocationId]="selectedLocation()?.id">
           </app-place-select>
+
           @if (!selectedLocation()) {
-          <small class="text-warning">
-            Please select a location first to enable place selection </small>
+          <div class="required-location-message">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Please select a location first to enable place selection
+          </div>
           }
         </div>
 

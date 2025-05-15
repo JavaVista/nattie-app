@@ -28,6 +28,7 @@ import {
   IonProgressBar,
   IonCardHeader,
   IonCardTitle,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
@@ -67,6 +68,7 @@ import { Place } from 'src/app/places/place.model';
     QuillModule,
     LocationSelectComponent,
     PlaceSelectComponent,
+    IonIcon,
   ],
 })
 export class CreateMicroblogComponent implements OnInit, AfterViewInit {
@@ -80,7 +82,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
   selectedLocation = signal<Location | null>(null);
   selectedPlace = signal<Place | null>(null);
-
 
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
@@ -178,6 +179,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
   onLocationSelected(location: Location | null) {
     this.selectedLocation.set(location);
+    this.selectedPlace.set(null);
     this.updateFormValidity();
   }
 
@@ -196,6 +198,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   onPlaceSelected(place: Place | null) {
+    console.log('Place selected:', place);
     this.selectedPlace.set(place);
   }
 
@@ -230,7 +233,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     }
 
     const location = `${locationSelected.city}, ${locationSelected.country}`;
-    const place =  placeSelected?.place_name;
+    const place = placeSelected?.place_name;
 
     this.isGeneratingFacts.set(true);
 
@@ -253,7 +256,11 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   async createMicroblog() {
     if (this.form.invalid || !this.selectedLocation()) {
       console.error(
-        'Cannot create microblog: form invalid or no location selected'
+        'Cannot create microblog: form invalid or no location selected',
+        {
+          formValid: this.form.valid,
+          locationSelected: !!this.selectedLocation(),
+        }
       );
       return;
     }
@@ -302,8 +309,10 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
         this.uselessFacts().length > 0 ? this.uselessFacts() : undefined,
       file_urls: fileUrls.length > 0 ? fileUrls : undefined,
       created_at: new Date().toISOString(),
-      place_id: place?.id
+      place_id: place?.id || undefined,
     };
+
+    console.log('Creating microblog with data:', newMicroblog);
 
     const { error } = await this.supabaseService.createMicroblog(newMicroblog);
     if (!error) {

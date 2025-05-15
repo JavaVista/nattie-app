@@ -29,38 +29,45 @@ export class PlaceService {
       }
 
       this.places.set(data as Place[]);
+      return data;
     } catch (err) {
       console.error('Error fetching places:', err);
       this.error.set(
         err instanceof Error ? err.message : 'Unknown error occurred'
       );
+      return [];
     } finally {
       this.loading.set(false);
     }
   }
 
-  async createPlace(place: Partial<Place>, locationId?: string) {
+  async createPlace(place: Partial<Place>) {
+    // Ensure a location_id is provided
+    if (!place.location_id) {
+      return {
+        data: null,
+        error: {
+          message: 'A location must be selected before creating a place',
+        },
+      };
+    }
+
+    // Check if the place already exists for this location
     const existingPlace = this.places().find(
-      (loc) => loc.place_name.toLowerCase() === place.place_name?.toLowerCase()
+      (p) =>
+        p.place_name.toLowerCase() === place.place_name?.toLowerCase() &&
+        p.location_id === place.location_id
     );
 
     if (existingPlace) {
       return { data: existingPlace, error: null };
     }
 
-    const finalLocationId =
-      locationId || this.locationService.getSelectedLocation()?.id;
-
-    const placeWithLocation: Partial<Place> = {
-      ...place,
-      location_id: finalLocationId,
-    };
-
-    console.log(placeWithLocation)
+    console.log('Creating place with data:', place);
 
     const { data, error } = await this.supabase
       .from('places')
-      .insert(placeWithLocation)
+      .insert(place)
       .select()
       .single();
 

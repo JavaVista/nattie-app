@@ -1,5 +1,6 @@
 import {
   Component,
+  effect,
   EventEmitter,
   inject,
   Input,
@@ -29,16 +30,28 @@ import { CreatePlaceModalComponent } from '../create-place-modal/create-place-mo
 })
 export class PlaceSelectComponent implements OnInit {
   private placeService = inject(PlaceService);
-
   private modalCtrl = inject(ModalController);
 
   @Input() selectedLocationId?: string;
   @Output() placeSelected = new EventEmitter<Place | null>();
 
   selectedPlaceId = signal<string | null>(null);
-  places = this.placeService.places;
+  filteredPlaces = signal<Place[]>([]);
 
-  constructor() {}
+  constructor() {
+    effect(() => {
+      if (this.selectedLocationId && this.placeService.places().length > 0) {
+        // Filter places by location_id
+        this.filteredPlaces.set(
+          this.placeService
+            .places()
+            .filter((place) => place.location_id === this.selectedLocationId)
+        );
+      } else {
+        this.filteredPlaces.set([]);
+      }
+    });
+  }
 
   ngOnInit() {
     this.placeService.fetchPlaces();
@@ -50,12 +63,24 @@ export class PlaceSelectComponent implements OnInit {
       this.selectedPlaceId.set(null);
       this.placeSelected.emit(null);
 
+      if (!this.selectedLocationId) {
+        console.warn('Cannot create place: No location selected');
+
+        const selectElement = event.target as HTMLIonSelectElement;
+        if (selectElement) {
+          selectElement.value = null;
+        }
+
+        return;
+      }
+
       const modal = await this.modalCtrl.create({
         component: CreatePlaceModalComponent,
         componentProps: {
           locationId: this.selectedLocationId,
         },
       });
+
       await modal.present();
 
       const { data } = await modal.onWillDismiss();
@@ -71,7 +96,9 @@ export class PlaceSelectComponent implements OnInit {
         }
       }
     } else {
-      const selectedPlace = this.places().find((plc) => plc.id === value);
+      const selectedPlace = this.filteredPlaces().find(
+        (plc) => plc.id === value
+      );
       if (selectedPlace) {
         this.selectedPlaceId.set(selectedPlace.id);
         this.placeSelected.emit(selectedPlace);

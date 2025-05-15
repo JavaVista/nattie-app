@@ -1,3 +1,10 @@
+.location-context {
+  background-color: var(--ion-color-light);
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid var(--ion-color-primary);
+}
+
 .clickable-photo {
   cursor: pointer;
   width: 100%;

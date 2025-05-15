@@ -13,6 +13,7 @@ import {
   IonRow,
   IonCol,
   ModalController,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { GooglePlacesService } from 'src/app/services/google-places.service';
 import { PlaceService } from 'src/app/services/place.service';
@@ -43,18 +44,32 @@ export class CreatePlaceModalComponent implements OnInit {
   private googlePlacesService = inject(GooglePlacesService);
   private placeService = inject(PlaceService);
   private coordsService = inject(LocationCoordinatesService);
+  private toastCtrl = inject(ToastController);
 
   searchResults = signal<any[]>([]);
   photos = signal<string[]>([]);
   selectedPhoto = signal<string>('');
   searchText = signal('');
 
-  @Input() locationId?: string;
+  @Input() locationId!: string;
   @Input() locationCoordinates: { lat: number; lng: number } | null = null;
 
-  constructor() {}
+  ngOnInit() {
+    if (!this.locationId) {
+      console.error('CreatePlaceModal initialized without a locationId');
+      this.showToast('A location must be selected before creating a place');
+      this.cancel();
+    }
+  }
 
-  ngOnInit() {}
+  async showToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      color: 'danger',
+    });
+    await toast.present();
+  }
 
   onSearchInput(event: Event) {
     const input = event.target as HTMLIonInputElement;
@@ -103,17 +118,26 @@ export class CreatePlaceModalComponent implements OnInit {
       return;
     }
 
-    const { data, error } = await this.placeService.createPlace({
-      place_name: place,
-      photo_url: this.selectedPhoto(),
-    }, this.locationId);
-
-    if (error) {
-      console.error('Error creating place:', error);
+    if (!this.locationId) {
+      await this.showToast(
+        'A location must be selected before creating a place'
+      );
       return;
     }
 
-    this.modalCtrl.dismiss(data);
+    const { data, error } = await this.placeService.createPlace({
+      place_name: place,
+      photo_url: this.selectedPhoto(),
+      location_id: this.locationId,
+    });
+
+    if (error) {
+      console.error('Error creating place:', error);
+      await this.showToast('Error creating place: ' + error.message);
+      return;
+    }
+
+    this.modalCtrl.dismiss({ place: data });
   }
 
   cancel() {
