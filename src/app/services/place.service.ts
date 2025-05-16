@@ -63,8 +63,6 @@ export class PlaceService {
       return { data: existingPlace, error: null };
     }
 
-    console.log('Creating place with data:', place);
-
     const { data, error } = await this.supabase
       .from('places')
       .insert(place)

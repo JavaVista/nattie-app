@@ -17,9 +17,6 @@ export class SupabaseService {
 
   constructor() {
     this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
-    this.getUser().then(() => {
-      console.log('authState initialized');
-    });
   }
 
   async signUp(email: string, password: string) {

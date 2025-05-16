@@ -50,7 +50,6 @@ export class TripListComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['locations']) {
-      console.log('TripListComponent received new locations:', this.locations);
       this.tripLocations.set(this.locations);
     }
   }

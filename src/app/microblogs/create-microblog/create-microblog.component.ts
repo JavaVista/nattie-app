@@ -198,7 +198,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   onPlaceSelected(place: Place | null) {
-    console.log('Place selected:', place);
     this.selectedPlace.set(place);
   }
 
@@ -311,8 +310,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       created_at: new Date().toISOString(),
       place_id: place?.id || undefined,
     };
-
-    console.log('Creating microblog with data:', newMicroblog);
 
     const { error } = await this.supabaseService.createMicroblog(newMicroblog);
     if (!error) {

@@ -68,7 +68,6 @@ export class LoginPage {
       const userExists = await this.supabaseService.checkUserExists(userId);
 
       if (!userExists) {
-        console.log('User does not exist, inserting...');
         const { error: insertError } = await this.supabaseService.insertUser(userId, this.email(), "Unknown");
 
         if (insertError) {
