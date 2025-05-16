@@ -44,6 +44,7 @@ import { LocationSelectComponent } from 'src/app/locations/location-select/locat
 import { Location } from 'src/app/locations/location.model';
 import { PlaceSelectComponent } from 'src/app/places/place-select/place-select.component';
 import { Place } from 'src/app/places/place.model';
+import { PlaceService } from 'src/app/services/place.service';
 
 @Component({
   selector: 'app-create-microblog',
@@ -82,11 +83,13 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
   selectedLocation = signal<Location | null>(null);
   selectedPlace = signal<Place | null>(null);
+  placesLoaded = signal(false);
 
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
   private formBuilder = inject(FormBuilder);
   private aiService = inject(AiService);
+  private placeService = inject(PlaceService);
 
   @ViewChild(QuillEditorComponent) editorComponent?: QuillEditorComponent;
 
@@ -119,6 +122,9 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.placeService.fetchPlaces().then(() => {
+      this.placesLoaded.set(true);
+    });
     this.form = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
       content: ['', [Validators.required, Validators.minLength(10)]],
@@ -167,14 +173,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   updateFormValidity() {
     const hasValidLocation = this.selectedLocation() !== null;
     this.isFormValid.set(this.form.valid && hasValidLocation);
-    // For debugging
-    // console.log('Form validity updated:', {
-    //   valid: this.form.valid,
-    //   titleErrors: this.form.get('title')?.errors,
-    //   contentErrors: this.form.get('content')?.errors,
-    //   titleValue: this.form.get('title')?.value,
-    //   contentValue: this.form.get('content')?.value?.length
-    // });
   }
 
   onLocationSelected(location: Location | null) {

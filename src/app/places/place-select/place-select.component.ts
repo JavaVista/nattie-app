@@ -32,29 +32,39 @@ export class PlaceSelectComponent implements OnInit {
   private placeService = inject(PlaceService);
   private modalCtrl = inject(ModalController);
 
-  @Input() selectedLocationId?: string;
+  @Input({ required: true }) selectedLocationId!: string | undefined;
   @Output() placeSelected = new EventEmitter<Place | null>();
 
   selectedPlaceId = signal<string | null>(null);
   filteredPlaces = signal<Place[]>([]);
 
   constructor() {
-    effect(() => {
-      if (this.selectedLocationId && this.placeService.places().length > 0) {
-        // Filter places by location_id
-        this.filteredPlaces.set(
-          this.placeService
-            .places()
-            .filter((place) => place.location_id === this.selectedLocationId)
-        );
-      } else {
-        this.filteredPlaces.set([]);
-      }
-    });
+    effect(() => this.updateFilteredPlaces());
   }
 
-  ngOnInit() {
-    this.placeService.fetchPlaces();
+  ngOnInit() {}
+
+  private updateFilteredPlaces() {
+    if (this.selectedLocationId) {
+      this.filteredPlaces.set(
+        this.placeService
+          .places()
+          .filter((place) => place.location_id === this.selectedLocationId)
+      );
+
+      const currentPlaceId = this.selectedPlaceId();
+      if (currentPlaceId) {
+        const selectedPlaceExists = this.filteredPlaces().some(
+          (place) => place.id === currentPlaceId
+        );
+        if (!selectedPlaceExists) {
+          this.selectedPlaceId.set(null);
+          this.placeSelected.emit(null);
+        }
+      }
+    } else {
+      this.filteredPlaces.set([]);
+    }
   }
 
   async onPlaceChange(event: CustomEvent<SelectChangeEventDetail>) {
@@ -86,9 +96,18 @@ export class PlaceSelectComponent implements OnInit {
       const { data } = await modal.onWillDismiss();
       if (data?.place) {
         await this.placeService.fetchPlaces();
-
         this.selectedPlaceId.set(data.place.id);
         this.placeSelected.emit(data.place);
+
+        this.updateFilteredPlaces();
+        setTimeout(() => {
+          const selectElement = document.querySelector(
+            'ion-select'
+          ) as HTMLIonSelectElement;
+          if (selectElement) {
+            selectElement.value = data.place.id;
+          }
+        }, 0);
       } else {
         const selectElement = event.target as HTMLIonSelectElement;
         if (selectElement) {

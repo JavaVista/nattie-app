@@ -18,29 +18,6 @@ export class PlaceService {
     this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
   }
 
-  async fetchPlaces() {
-    try {
-      this.loading.set(true);
-      this.error.set(null);
-      const { data, error } = await this.supabase.from('places').select('*');
-
-      if (error) {
-        throw error;
-      }
-
-      this.places.set(data as Place[]);
-      return data;
-    } catch (err) {
-      console.error('Error fetching places:', err);
-      this.error.set(
-        err instanceof Error ? err.message : 'Unknown error occurred'
-      );
-      return [];
-    } finally {
-      this.loading.set(false);
-    }
-  }
-
   async createPlace(place: Partial<Place>) {
     // Ensure a location_id is provided
     if (!place.location_id) {
@@ -74,5 +51,55 @@ export class PlaceService {
     }
 
     return { data, error };
+  }
+
+  async fetchPlaces() {
+    try {
+      this.loading.set(true);
+      this.error.set(null);
+      const { data, error } = await this.supabase.from('places').select('*');
+
+      if (error) {
+        throw error;
+      }
+
+      this.places.set(data as Place[]);
+      return data;
+    } catch (err) {
+      console.error('Error fetching places:', err);
+      this.error.set(
+        err instanceof Error ? err.message : 'Unknown error occurred'
+      );
+      return [];
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async fetchPlacesByLocationId(locationId: string): Promise<Place[]> {
+    try {
+      this.loading.set(true);
+      this.error.set(null);
+
+      const { data, error } = await this.supabase
+        .from('places')
+        .select('*')
+        .eq('location_id', locationId); // Filter by locationId
+
+      if (error) {
+        throw error;
+      }
+
+      this.places.set(data as Place[]); // Update the places signal
+      return data as Place[];
+    } catch (err) {
+      console.error('Error fetching places:', err);
+      this.error.set(
+        err instanceof Error ? err.message : 'Unknown error occurred'
+      );
+      return [];
+    } finally {
+      this.loading.set(false);
+    }
   }
 }

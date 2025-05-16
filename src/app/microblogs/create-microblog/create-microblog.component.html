@@ -30,9 +30,9 @@
           [placeholder]="'Write your content here...'">
         </quill-editor>
         @if (form.get('content')?.touched && form.get('content')?.invalid) {
-        <p class="error">
+        <div class="error">
           Content must be at least 10 characters.
-        </p>
+        </div>
         }
 
         @if (uselessFacts().length > 0) {
@@ -51,8 +51,10 @@
         }
 
         <div class="place-selection-container">
+          @if (placesLoaded()) {
           <app-place-select (placeSelected)="onPlaceSelected($event)" [selectedLocationId]="selectedLocation()?.id">
           </app-place-select>
+          }
 
           @if (!selectedLocation()) {
           <div class="required-location-message">
