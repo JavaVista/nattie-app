@@ -1,21 +1,30 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Microblog } from '../microblogs.model';
-import { IonList, IonItem, IonLabel, IonButton, IonThumbnail } from "@ionic/angular/standalone";
+import {
+  IonContent,
+  IonButton,
+  IonIcon,
+  IonGrid,
+  IonRow,
+  IonCol,
+} from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-blog-selection-list',
   templateUrl: './blog-selection-list.component.html',
   styleUrls: ['./blog-selection-list.component.scss'],
   standalone: true,
-  imports: [IonList, IonItem, IonLabel, IonButton, IonThumbnail],
+  imports: [IonContent, IonButton, IonIcon, IonGrid, IonRow, IonCol],
 })
 export class BlogSelectionListComponent {
   @Input() microblogs: Microblog[] = [];
-  @Input() editMicroblog!: (blog: Microblog) => void;
-  @Output() deleteMicroblog = new EventEmitter<string>();
   @Input() isAdminView = false;
 
-  constructor() {}
+  @Output() editMicroblog = new EventEmitter<Microblog>();
+  @Output() deleteMicroblog = new EventEmitter<string>();
+
+  private router = inject(Router);
 
   getThumbnail(blog: Microblog): string {
     return blog.file_urls && blog.file_urls.length > 0
@@ -36,6 +45,15 @@ export class BlogSelectionListComponent {
     }
     return text;
   }
+
+  readMore(id: string) {
+    this.router.navigate(['/microblog', id]);
+  }
+
+  onEdit(blog: Microblog) {
+    this.editMicroblog.emit(blog);
+  }
+
   onDelete(id: Microblog['id']) {
     this.deleteMicroblog.emit(id);
   }

@@ -4,10 +4,8 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnInit,
   Output,
   signal,
-  Signal,
 } from '@angular/core';
 import {
   IonItem,
@@ -28,7 +26,7 @@ import { CreatePlaceModalComponent } from '../create-place-modal/create-place-mo
   standalone: true,
   imports: [IonItem, IonLabel, IonSelect, IonSelectOption],
 })
-export class PlaceSelectComponent implements OnInit {
+export class PlaceSelectComponent {
   private placeService = inject(PlaceService);
   private modalCtrl = inject(ModalController);
 
@@ -41,8 +39,6 @@ export class PlaceSelectComponent implements OnInit {
   constructor() {
     effect(() => this.updateFilteredPlaces());
   }
-
-  ngOnInit() {}
 
   private updateFilteredPlaces() {
     if (this.selectedLocationId) {

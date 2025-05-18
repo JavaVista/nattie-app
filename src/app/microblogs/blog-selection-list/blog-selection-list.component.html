@@ -1,17 +1,27 @@
-<ion-list>
-  @for (blog of microblogs; track blog.id) {
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img [src]="getThumbnail(blog)" alt="Blog thumbnail" />
-    </ion-thumbnail>
-    <ion-label>
-      <h2>{{ blog.title }}</h2>
-      <p>{{ getPlainTextPreview(blog.content, 50) }}</p>
-    </ion-label>
-    @if (isAdminView) {
-    <ion-button (click)="editMicroblog(blog)">Edit</ion-button>
-    <ion-button color="danger" (click)="onDelete(blog.id!)">Delete</ion-button>
+<ion-content [fullscreen]="true">
+  <ion-grid class="blog-list-container">
+    @for (blog of microblogs; track blog.id) {
+    <ion-row class="blog-card">
+      <ion-col size="auto" class="image-container">
+        <img [src]="getThumbnail(blog)" alt="Blog image" class="blog-image" />
+      </ion-col>
+
+      <ion-col class="blog-text">
+        <h3 class="blog-title">{{ blog.title }}</h3>
+        <p class="blog-snippet">{{ getPlainTextPreview(blog.content, 50) }}</p>
+
+        <div class="blog-footer">
+          <ion-button size="small" fill="clear" color="success" (click)="readMore(blog.id!)">
+            Read more...
+          </ion-button>
+
+          @if (isAdminView) {
+          <ion-icon name="create-outline" (click)="onEdit(blog)" class="icon-button"></ion-icon>
+          <ion-icon name="trash-outline" color="danger" (click)="onDelete(blog.id!)" class="icon-button"></ion-icon>
+          }
+        </div>
+      </ion-col>
+    </ion-row>
     }
-  </ion-item>
-  }
-</ion-list>
+  </ion-grid>
+</ion-content>

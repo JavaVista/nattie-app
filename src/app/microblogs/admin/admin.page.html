@@ -8,9 +8,22 @@
 </ion-header>
 
 <ion-content>
-
-  <app-blog-selection-list [microblogs]="microblogs" [editMicroblog]="editMicroblog"
-    (deleteMicroblog)="deleteMicroblog($event)" [isAdminView]="true">
+  @if (loading) {
+  <div class="loading-container">
+    <ion-spinner name="circular"></ion-spinner>
+    <p>Loading blogs...</p>
+  </div>
+  } @else if (errorMessage) {
+  <div class="error-container">
+    <p>{{ errorMessage }}</p>
+  </div>
+  } @else if (microblogs.length === 0) {
+  <div class="empty-state">
+    <p>No blogs found</p>
+  </div>
+  } @else {
+  <app-blog-selection-list [microblogs]="microblogs" [isAdminView]="true" (editMicroblog)="editMicroblog($event)"
+    (deleteMicroblog)="deleteMicroblog($event)">
   </app-blog-selection-list>
-
+  }
 </ion-content>

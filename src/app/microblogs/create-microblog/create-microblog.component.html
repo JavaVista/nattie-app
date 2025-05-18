@@ -12,7 +12,8 @@
     <ion-card>
       <ion-card-content>
 
-        <ion-input formControlName="title" placeholder="Title"></ion-input>
+        <ion-input formControlName="title" label="Title" labelPlacement="stacked" placeholder="Title" [counter]="true"
+          maxlength="60" [clearInput]="true"></ion-input>
         @if (form.get('title')?.touched && form.get('title')?.invalid) {
         <p class="error">
           Title is required (min 5 characters).
