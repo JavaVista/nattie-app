@@ -6,6 +6,7 @@ import {
   Input,
   Output,
   signal,
+  ViewChild,
 } from '@angular/core';
 import {
   IonItem,
@@ -29,6 +30,8 @@ import { CreatePlaceModalComponent } from '../create-place-modal/create-place-mo
 export class PlaceSelectComponent {
   private placeService = inject(PlaceService);
   private modalCtrl = inject(ModalController);
+
+  @ViewChild('placeSelect') placeSelect!: IonSelect;
 
   @Input({ required: true }) selectedLocationId!: string | undefined;
   @Output() placeSelected = new EventEmitter<Place | null>();
@@ -96,12 +99,10 @@ export class PlaceSelectComponent {
         this.placeSelected.emit(data.place);
 
         this.updateFilteredPlaces();
+
         setTimeout(() => {
-          const selectElement = document.querySelector(
-            'ion-select'
-          ) as HTMLIonSelectElement;
-          if (selectElement) {
-            selectElement.value = data.place.id;
+          if (this.placeSelect) {
+            this.placeSelect.value = data.place.id;
           }
         }, 0);
       } else {
