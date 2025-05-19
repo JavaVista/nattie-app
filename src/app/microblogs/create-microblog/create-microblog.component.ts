@@ -220,6 +220,10 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   //   };
   // }
 
+  shouldDisableUselessFacts = computed(() => {
+    return this.isGeneratingFacts() || this.selectedLocation() === null;
+  });
+
   async generateUselessFacts() {
     const locationSelected = this.selectedLocation();
     const placeSelected = this.selectedPlace();

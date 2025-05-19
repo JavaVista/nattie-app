@@ -65,7 +65,7 @@
           }
         </div>
 
-        <ion-button expand="block" (click)="generateUselessFacts()" [disabled]="isGeneratingFacts()">
+        <ion-button expand="block" (click)="generateUselessFacts()" [disabled]="shouldDisableUselessFacts()">
           🧠 Generate Useless Facts
         </ion-button>
 
