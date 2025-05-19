@@ -27,4 +27,11 @@ export const routes: Routes = [
         (m) => m.CountryBlogListPage
       ),
   },
+  {
+    path: 'microblog/:id',
+    loadComponent: () =>
+      import('./microblogs/microblog/microblog.page').then(
+        (m) => m.MicroblogPage
+      ),
+  },
 ];

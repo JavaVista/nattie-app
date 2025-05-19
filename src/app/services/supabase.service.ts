@@ -119,6 +119,14 @@ export class SupabaseService {
     return { data, error };
   }
 
+  async getMicroblogById(id: string) {
+    return this.supabase
+      .from('microblogs')
+      .select('*, place(*), locations(*)')
+      .eq('id', id)
+      .single();
+  }
+
   async deleteMicroblog(id: string) {
     const { data, error } = await this.supabase
       .from('microblogs')
