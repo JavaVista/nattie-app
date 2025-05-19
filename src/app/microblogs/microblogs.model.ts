@@ -9,4 +9,19 @@ export interface Microblog {
   country?: string;
   location_id?: string;
   place_id?: string;
+
+  place?: {
+    id: string;
+    place_name: string;
+    photo_url: string;
+    location_id: string;
+    city: string;
+  };
+
+  locations?: {
+    id: string;
+    city: string;
+    country: string;
+    photo_url: string;
+  };
 }

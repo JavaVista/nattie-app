@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
     <ion-title>microblog</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -14,10 +17,11 @@
   <div class="error-container">
     <p>{{ error() }}</p>
   </div>
-  } @else if (blog()) {
+  } @else if (!blog()) {
   <div class="empty-state">
     <p>No blog found</p>
   </div>
-  } @else {
-  <!-- <app-blog-view [blog]="blog()"></app-blog-view> -->
+  } @else if (transformedBlog()) {
+  <app-blog-view [blog]="transformedBlog()!"></app-blog-view>
   }
+</ion-content>

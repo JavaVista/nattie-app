@@ -122,7 +122,7 @@ export class SupabaseService {
   async getMicroblogById(id: string) {
     return this.supabase
       .from('microblogs')
-      .select('*, place(*), locations(*)')
+      .select('*, places(*), locations(*)')
       .eq('id', id)
       .single();
   }

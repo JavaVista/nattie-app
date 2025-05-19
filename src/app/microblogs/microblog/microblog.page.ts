@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   IonContent,
@@ -6,16 +6,28 @@ import {
   IonTitle,
   IonToolbar,
   IonSpinner,
+  IonButtons,
+  IonBackButton,
 } from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
+import { BlogViewComponent } from '../blog-view/blog-view.component';
 
 @Component({
   selector: 'app-microblog',
   templateUrl: './microblog.page.html',
   styleUrls: ['./microblog.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonSpinner],
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonSpinner,
+    BlogViewComponent,
+    IonButtons,
+    IonBackButton,
+  ],
 })
 export class MicroblogPage implements OnInit {
   private route = inject(ActivatedRoute);
@@ -24,6 +36,29 @@ export class MicroblogPage implements OnInit {
   blog = signal<Microblog | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
+
+  transformedBlog = computed(() => {
+    if (!this.blog()) return null;
+
+    const blog = this.blog();
+
+    return signal({
+      title: blog?.title || '',
+      location_image: blog?.file_urls?.[0] || 'assets/images/EuroTrip.png',
+      city: blog?.place?.city || '',
+      country: blog?.country || '',
+      created_at: blog?.created_at || new Date(),
+      content: blog?.content || {},
+      useless_facts: blog?.useless_facts || [],
+      gallery_images: blog?.file_urls || [],
+      place: blog?.place
+        ? {
+            place_name: blog.place.place_name,
+            place_photo: blog.place.photo_url,
+          }
+        : undefined,
+    });
+  });
 
   ngOnInit() {
     this.loadMicroblog();
@@ -41,6 +76,10 @@ export class MicroblogPage implements OnInit {
 
       if (error) {
         throw error;
+      }
+
+      if (!data) {
+        throw new Error('Blog not found');
       }
 
       this.blog.set(data);
