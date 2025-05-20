@@ -10,7 +10,7 @@ export interface Microblog {
   location_id?: string;
   place_id?: string;
 
-  place?: {
+  places?: {
     id: string;
     place_name: string;
     photo_url: string;

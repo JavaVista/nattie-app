@@ -20,15 +20,15 @@ import { QuillViewComponent } from 'ngx-quill';
 })
 export class BlogViewComponent implements OnInit {
   @Input() blog!: Signal<{
-    title: string;
     location_image: string;
+    title: string;
     city: string;
     country: string;
     created_at: string | Date;
     content: any;
     useless_facts: string[];
-    gallery_images: string[];
     place?: { place_name: string; place_photo?: string };
+    gallery_images: string[];
   }>;
 
   datePipe = inject(DatePipe);
@@ -48,6 +48,7 @@ export class BlogViewComponent implements OnInit {
   );
 
   ngOnInit() {
+
     if (!this.blog) {
       console.error('BlogViewComponent: No blog data received');
     }

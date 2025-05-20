@@ -43,26 +43,26 @@ export class MicroblogPage implements OnInit {
     const blog = this.blog();
 
     const locationImage =
-      blog?.place?.photo_url || // First try place photo
+      blog?.places?.photo_url || // First try place photo
       blog?.locations?.photo_url || // Then location photo
       blog?.file_urls?.[0] || // Then first uploaded file
       'assets/images/EuroTrip.png'; // Default fallback
 
     return signal({
-      title: blog?.title || '',
       location_image: locationImage,
+      title: blog?.title || '',
       city: blog?.locations?.city || '',
       country: blog?.country || '',
       created_at: blog?.created_at || new Date(),
       content: blog?.content || {},
       useless_facts: blog?.useless_facts || [],
+      place: blog?.places
+      ? {
+        place_name: blog.places.place_name,
+        place_photo: blog.places.photo_url,
+      }
+      : undefined,
       gallery_images: blog?.file_urls || [],
-      place: blog?.place
-        ? {
-            place_name: blog.place.place_name,
-            place_photo: blog.place.photo_url,
-          }
-        : undefined,
     });
   });
 
@@ -83,6 +83,8 @@ export class MicroblogPage implements OnInit {
       if (error) {
         throw error;
       }
+    
+      console.log( 'fetch data...', data)
 
       if (!data) {
         throw new Error('Blog not found');
