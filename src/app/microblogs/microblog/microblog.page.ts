@@ -42,10 +42,16 @@ export class MicroblogPage implements OnInit {
 
     const blog = this.blog();
 
+    const locationImage =
+      blog?.place?.photo_url || // First try place photo
+      blog?.locations?.photo_url || // Then location photo
+      blog?.file_urls?.[0] || // Then first uploaded file
+      'assets/images/EuroTrip.png'; // Default fallback
+
     return signal({
       title: blog?.title || '',
-      location_image: blog?.file_urls?.[0] || 'assets/images/EuroTrip.png',
-      city: blog?.place?.city || '',
+      location_image: locationImage,
+      city: blog?.locations?.city || '',
       country: blog?.country || '',
       created_at: blog?.created_at || new Date(),
       content: blog?.content || {},

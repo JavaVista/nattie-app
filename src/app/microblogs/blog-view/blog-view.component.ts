@@ -7,7 +7,7 @@ import {
   OnInit,
   Signal,
 } from '@angular/core';
-import { IonContent, IonImg } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { QuillViewComponent } from 'ngx-quill';
 
 @Component({
@@ -15,7 +15,7 @@ import { QuillViewComponent } from 'ngx-quill';
   templateUrl: './blog-view.component.html',
   styleUrls: ['./blog-view.component.scss'],
   standalone: true,
-  imports: [IonContent, IonImg, QuillViewComponent],
+  imports: [IonContent, QuillViewComponent],
   providers: [DatePipe],
 })
 export class BlogViewComponent implements OnInit {
@@ -46,7 +46,6 @@ export class BlogViewComponent implements OnInit {
   remainingCount = computed(() =>
     Math.max(this.blog().gallery_images.length - 3, 0)
   );
-
 
   ngOnInit() {
     if (!this.blog) {
