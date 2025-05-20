@@ -1,3 +1,23 @@
+:host {
+  // Ensure safe area insets are respected for positioning
+  --ion-safe-area-top: env(safe-area-inset-top);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+ion-header {
+  position: absolute; /* Position over the hero background */
+  width: 100%;
+  top: var(--ion-safe-area-top, 0); /* Align to safe area */
+  z-index: 10; /* Ensure header is on top of other content */
+  ion-toolbar {
+    --background: transparent;
+    --border-color: transparent;
+    color: white; /* Icons and potential title color */
+    font-size: 1.2rem;
+    --min-height: 56px; /* Default Ionic header height */
+  }
+}
+
 .loading-container,
 .error-container,
 .empty-state {

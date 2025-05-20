@@ -1,40 +1,66 @@
-.hero-image-container {
-  position: relative;
+.fixed-hero-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  // Height should account for the visible part of the image, including where the overlay overlaps
+  height: 280px; /* Adjust this value to control how much of the image is visible before scroll */
+  background-size: cover;
+  background-position: center;
+  z-index: 1; /* Below scrollable content but above the page background */
+}
 
-  .hero-image {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-  }
+ion-content {
+  // This padding creates space for the fixed hero background at the top.
+  // It's crucial for the scrollable content to start below the hero.
+  --padding-top: 250px; /* (fixed-hero-background height - desired overlay overlap) */
+  --background: transparent; /* Allows the fixed background image to show through */
+  z-index: 2; /* Ensures ion-content is above the fixed background */
 
-  .overlay {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: white;
+  .main-content {
+    background: white; /* This will be the background of your main scrollable content */
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+    position: relative; /* Establish positioning context for overlay */
+    margin-top: -30px; /* Pull the entire main-content block up to overlap the hero */
     padding: 1rem;
-    text-align: center;
-  }
-
-  .hero-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
-  }
-
-  .hero-location {
-    font-size: 1rem;
-    color: #888;
+    padding-top: 3rem; /* Add padding inside main-content to push actual text below the overlay */
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for visual separation */
   }
 }
 
-.main-content {
+.overlay {
+  // This overlay is now part of the scrollable content, but positioned to look like it's on the hero.
+  position: absolute;
+  top: -100px; /* Adjust this to control how much it overlaps the fixed hero image */
+  left: 0;
+  width: 100%;
+  background: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* A subtle shadow to match the design */
+  z-index: 5; /* Ensure it sits on top of the main-content's background and fixed hero */
+}
+
+.hero-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #333; /* Darker text for readability on white background */
+}
+
+.hero-location {
+  font-size: 1rem;
+  color: #888;
+}
+
+.main-content {
+  padding: 1rem; // Keep existing padding for general content
 
   .date {
-    margin-top: 1rem;
+    margin-top: 1rem; // Adjust based on new overlay position
     font-size: 0.9rem;
     color: #444;
   }

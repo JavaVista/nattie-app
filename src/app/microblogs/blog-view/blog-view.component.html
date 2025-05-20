@@ -1,20 +1,16 @@
-<ion-content [fullscreen]="true">
-  <!-- Hero Image & Title -->
-  <div class="hero-image-container">
-    <img [src]="heroImage()" class="hero-image" alt="Blog Hero Image" />
+<div class="fixed-hero-background" [style.background-image]="'url(' + heroImage() + ')'"></div>
+
+<ion-content [scrollEvents]="true" class="blog-scroll-content">
+  <div class="main-content">
     <div class="overlay">
       <h1 class="hero-title">{{ blog().title }}</h1>
       <p class="hero-location">{{ blog().city }}, {{ blog().country }}</p>
     </div>
-  </div>
 
-  <div class="main-content">
     <p class="date">{{ formattedDate() }}</p>
 
-    <!-- Quill Content -->
     <quill-view [content]="blog().content" format="object"></quill-view>
 
-    <!-- Useless Facts -->
     @if (blog().useless_facts && blog().useless_facts.length > 0) {
     <hr />
     <div class="useless-facts-section">
@@ -27,17 +23,13 @@
     </div>
     }
 
-    <!-- Place Name -->
     @if (blog().place?.place_name) {
     <h4 class="place-name">{{ blog().place?.place_name }}</h4>
     }
 
-    <!-- Map Placeholder -->
     <div class="map-placeholder">
-      <!-- Future Map Integration -->
     </div>
 
-    <!-- Gallery -->
     @if (blog().gallery_images && blog().gallery_images.length > 0) {
     <div class="gallery">
       <h5>Gallery</h5>

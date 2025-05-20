@@ -48,7 +48,6 @@ export class BlogViewComponent implements OnInit {
   );
 
   ngOnInit() {
-
     if (!this.blog) {
       console.error('BlogViewComponent: No blog data received');
     }
