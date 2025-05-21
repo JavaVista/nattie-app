@@ -44,7 +44,7 @@
           <ion-card-content>
             <ul>
               @for (fact of uselessFacts(); track $index) {
-              <li>{{ fact }}</li>
+              <li [innerHTML]="fact | markdown"></li>
               }
             </ul>
           </ion-card-content>

@@ -48,6 +48,7 @@ import { Location } from 'src/app/locations/location.model';
 import { PlaceSelectComponent } from 'src/app/places/place-select/place-select.component';
 import { Place } from 'src/app/places/place.model';
 import { PlaceService } from 'src/app/services/place.service';
+import { MarkdownPipe } from 'src/app/shared/markdown.pipe';
 
 @Component({
   selector: 'app-create-microblog',
@@ -75,6 +76,7 @@ import { PlaceService } from 'src/app/services/place.service';
     LocationSelectComponent,
     PlaceSelectComponent,
     IonIcon,
+    MarkdownPipe
   ],
 })
 export class CreateMicroblogComponent implements OnInit, AfterViewInit {
