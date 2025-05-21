@@ -9,13 +9,14 @@ import {
 } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
 import { QuillViewComponent } from 'ngx-quill';
+import { MarkdownPipe } from 'src/app/shared/markdown.pipe';
 
 @Component({
   selector: 'app-blog-view',
   templateUrl: './blog-view.component.html',
   styleUrls: ['./blog-view.component.scss'],
   standalone: true,
-  imports: [IonContent, QuillViewComponent],
+  imports: [IonContent, QuillViewComponent, MarkdownPipe],
   providers: [DatePipe],
 })
 export class BlogViewComponent implements OnInit {

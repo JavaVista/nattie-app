@@ -15,7 +15,7 @@ ion-content {
   z-index: 2;
 
   .main-content {
-    background: var(--ion-background-color, #ffffff); /* Add fallback color */
+    background: var(--ion-background-color, #ffffff);
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     position: relative;
@@ -23,7 +23,7 @@ ion-content {
     padding: 1rem;
     padding-top: 3rem;
     box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
-    color: var(--ion-text-color, #000000); /* Add fallback color */
+    color: var(--ion-text-color, #000000);
   }
 }
 
@@ -32,7 +32,7 @@ ion-content {
   top: -100px;
   left: 0;
   width: 100%;
-  background: var(--ion-background-color, #ffffff); /* Add fallback color */
+  background: var(--ion-background-color, #ffffff);
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 1rem;
@@ -45,12 +45,12 @@ ion-content {
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0;
-  color: var(--ion-text-color); /* Changed from #333 to use ion variable */
+  color: var(--ion-text-color);
 }
 
 .hero-location {
   font-size: 1rem;
-  color: var(--ion-color-medium); /* Changed from #888 to use ion medium color */
+  color: var(--ion-color-medium);
 }
 
 .main-content {
@@ -59,7 +59,7 @@ ion-content {
   .date {
     margin-top: 1rem;
     font-size: 0.9rem;
-    color: var(--ion-color-medium-shade); /* Changed from #444 */
+    color: var(--ion-color-medium-shade);
   }
 
   .useless-facts-section {
@@ -67,7 +67,7 @@ ion-content {
 
     .useless-tag {
       float: right;
-      background: #2e865c; /* This could stay as is since it's an accent color */
+      background: #2e865c;
       color: white;
       padding: 4px 12px;
       border-radius: 12px;
@@ -82,7 +82,7 @@ ion-content {
       li {
         margin-bottom: 0.5rem;
         font-size: 0.95rem;
-        color: var(--ion-text-color); /* Add this line to ensure list text adapts */
+        color: var(--ion-text-color);
       }
     }
   }
@@ -91,12 +91,12 @@ ion-content {
     margin: 1.5rem 0;
     text-align: center;
     font-weight: 600;
-    color: var(--ion-text-color); /* Add this line to ensure heading adapts */
+    color: var(--ion-text-color);
   }
 
   .map-placeholder {
     height: 160px;
-    background: var(--ion-color-light); /* Changed from #f0f0f0 */
+    background: var(--ion-color-light);
     border-radius: 8px;
     margin-bottom: 1rem;
   }
@@ -105,7 +105,7 @@ ion-content {
     h5 {
       font-size: 1rem;
       margin: 0.5rem 0;
-      color: var(--ion-text-color); /* Add this line to ensure heading adapts */
+      color: var(--ion-text-color);
     }
 
     .gallery-grid {

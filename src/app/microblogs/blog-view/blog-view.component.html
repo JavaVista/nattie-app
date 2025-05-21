@@ -17,7 +17,7 @@
       <span class="useless-tag">Useless Facts</span>
       <ul>
         @for (fact of blog().useless_facts; track fact) {
-        <li>{{ fact }}</li>
+        <li [innerHTML]="fact | markdown"></li>
         }
       </ul>
     </div>
