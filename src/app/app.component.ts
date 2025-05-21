@@ -24,6 +24,9 @@ import {
   informationCircleOutline,
   createOutline,
   trashOutline,
+  imagesOutline,
+  cloudUploadOutline,
+  images,
 } from 'ionicons/icons';
 
 @Component({
@@ -61,6 +64,9 @@ export class AppComponent {
       informationCircleOutline,
       createOutline,
       trashOutline,
+      imagesOutline,
+      cloudUploadOutline,
+      images,
     });
   }
 

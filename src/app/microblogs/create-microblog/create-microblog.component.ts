@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   OnInit,
   signal,
@@ -29,6 +30,8 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonIcon,
+  IonLabel,
+  IonChip,
 } from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
@@ -52,6 +55,8 @@ import { PlaceService } from 'src/app/services/place.service';
   styleUrls: ['./create-microblog.component.scss'],
   standalone: true,
   imports: [
+    IonChip,
+    IonLabel,
     IonProgressBar,
     IonToolbar,
     IonInput,
@@ -90,8 +95,10 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   private formBuilder = inject(FormBuilder);
   private aiService = inject(AiService);
   private placeService = inject(PlaceService);
+  private imagePreviews = signal<string[]>([]);
 
   @ViewChild(QuillEditorComponent) editorComponent?: QuillEditorComponent;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   private toolbarOptions = [
     ['bold', 'italic', 'underline', 'blockquote'],
@@ -247,11 +254,44 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     });
   }
 
+  triggerFileInput() {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.click();
+    }
+  }
+
   handleFileInput(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files) {
+      // Store the files
       this.files = computed(() => Array.from(input.files!));
+
+      // Generate previews
+      const previews: string[] = [];
+      Array.from(input.files).forEach((file) => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            previews.push(e.target.result);
+            this.imagePreviews.set([...previews]);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
     }
+  }
+
+  clearSelectedFiles() {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+    this.files = computed(() => []);
+    this.imagePreviews.set([]);
+  }
+
+  getImagePreviewUrl(file: File): string {
+    const index = this.files().indexOf(file);
+    return this.imagePreviews()[index] || '';
   }
 
   async createMicroblog() {
