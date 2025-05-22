@@ -1,0 +1,15 @@
+<ion-content class="fullscreen-gallery" [fullscreen]="true">
+  <swiper-container #swiperContainer pagination="true" zoom="true" lazy="true" mousewheel="true" class="gallery-swiper">
+    @for (img of images; track img) {
+    <swiper-slide>
+      <div class="swiper-zoom-container">
+        <img [src]="img" alt="Gallery image" />
+      </div>
+    </swiper-slide>
+    }
+  </swiper-container>
+
+  <ion-button shape="round" expand="block" color="medium" (click)="dismiss()" class="close-button">
+    Close
+  </ion-button>
+</ion-content>

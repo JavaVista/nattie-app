@@ -7,9 +7,10 @@ import {
   OnInit,
   Signal,
 } from '@angular/core';
-import { IonContent } from '@ionic/angular/standalone';
+import { IonContent, ModalController } from '@ionic/angular/standalone';
 import { QuillViewComponent } from 'ngx-quill';
 import { MarkdownPipe } from 'src/app/shared/markdown.pipe';
+import { BlogGalleryModalComponent } from '../blog-gallery-modal/blog-gallery-modal.component';
 
 @Component({
   selector: 'app-blog-view',
@@ -32,6 +33,8 @@ export class BlogViewComponent implements OnInit {
     gallery_images: string[];
   }>;
 
+  private modalCtrl = inject(ModalController);
+
   datePipe = inject(DatePipe);
 
   heroImage = computed(
@@ -52,5 +55,20 @@ export class BlogViewComponent implements OnInit {
     if (!this.blog) {
       console.error('BlogViewComponent: No blog data received');
     }
+  }
+
+  openGallery(index: number) {
+    console.log('BlogViewComponent: Opening gallery with index:', index);
+    this.modalCtrl
+      .create({
+        component: BlogGalleryModalComponent,
+        componentProps: {
+          images: this.blog().gallery_images,
+          startIndex: index,
+        },
+        breakpoints: [0, 1],
+        initialBreakpoint: 1,
+      })
+      .then((modal) => modal.present());
   }
 }
