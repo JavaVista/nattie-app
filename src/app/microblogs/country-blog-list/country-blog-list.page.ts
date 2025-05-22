@@ -1,10 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import {
+  IonButtons,
+  IonMenuButton,
   IonContent,
   IonHeader,
   IonTitle,
   IonToolbar,
   IonSpinner,
+  IonBackButton,
 } from '@ionic/angular/standalone';
 import { Microblog } from '../microblogs.model';
 import { BlogSelectionListComponent } from '../blog-selection-list/blog-selection-list.component';
@@ -17,6 +20,9 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   styleUrls: ['./country-blog-list.page.scss'],
   standalone: true,
   imports: [
+    IonBackButton,
+    IonButtons,
+    IonMenuButton,
     IonContent,
     IonHeader,
     IonTitle,

@@ -1,13 +1,15 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   IonContent,
   IonHeader,
-  IonTitle,
   IonToolbar,
   IonSpinner,
   IonButtons,
   IonBackButton,
+  IonMenuButton,
+  IonButton,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
@@ -19,14 +21,17 @@ import { BlogViewComponent } from '../blog-view/blog-view.component';
   styleUrls: ['./microblog.page.scss'],
   standalone: true,
   imports: [
+    IonButton,
     IonContent,
     IonHeader,
-    IonTitle,
     IonToolbar,
     IonSpinner,
     BlogViewComponent,
     IonButtons,
     IonBackButton,
+    IonMenuButton,
+    IonIcon,
+    RouterLink,
   ],
 })
 export class MicroblogPage implements OnInit {
@@ -57,11 +62,11 @@ export class MicroblogPage implements OnInit {
       content: blog?.content || {},
       useless_facts: blog?.useless_facts || [],
       place: blog?.places
-      ? {
-        place_name: blog.places.place_name,
-        place_photo: blog.places.photo_url,
-      }
-      : undefined,
+        ? {
+            place_name: blog.places.place_name,
+            place_photo: blog.places.photo_url,
+          }
+        : undefined,
       gallery_images: blog?.file_urls || [],
     });
   });
@@ -83,8 +88,8 @@ export class MicroblogPage implements OnInit {
       if (error) {
         throw error;
       }
-    
-      console.log( 'fetch data...', data)
+
+      console.log('fetch data...', data);
 
       if (!data) {
         throw new Error('Blog not found');

@@ -9,7 +9,6 @@ import {
   IonLabel,
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonAvatar,
   IonRouterOutlet,
   IonRouterLink,
@@ -17,16 +16,17 @@ import {
 import { SupabaseService } from './services/supabase.service';
 import { addIcons } from 'ionicons';
 import {
-  settings,
-  home,
-  logIn,
-  logOut,
+  settingsOutline,
+  homeOutline,
+  logInOutline,
+  logOutOutline,
   informationCircleOutline,
   createOutline,
   trashOutline,
   imagesOutline,
   cloudUploadOutline,
   images,
+  addCircleOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -43,7 +43,6 @@ import {
     IonLabel,
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonAvatar,
     IonRouterLink,
     IonRouterOutlet,
@@ -57,16 +56,17 @@ export class AppComponent {
 
   constructor() {
     addIcons({
-      home,
-      settings,
-      logIn,
-      logOut,
+      homeOutline,
+      settingsOutline,
+      logInOutline,
+      logOutOutline,
       informationCircleOutline,
       createOutline,
       trashOutline,
       imagesOutline,
       cloudUploadOutline,
       images,
+      addCircleOutline,
     });
   }
 

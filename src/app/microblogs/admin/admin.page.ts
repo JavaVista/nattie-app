@@ -1,5 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import {
+  IonMenuButton,
+  IonIcon,
   IonContent,
   IonHeader,
   IonTitle,
@@ -13,6 +15,7 @@ import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { CreateMicroblogComponent } from '../create-microblog/create-microblog.component';
 import { BlogSelectionListComponent } from '../blog-selection-list/blog-selection-list.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -20,6 +23,8 @@ import { BlogSelectionListComponent } from '../blog-selection-list/blog-selectio
   styleUrls: ['./admin.page.scss'],
   standalone: true,
   imports: [
+    IonMenuButton,
+    IonIcon,
     IonContent,
     IonHeader,
     IonTitle,
@@ -28,6 +33,7 @@ import { BlogSelectionListComponent } from '../blog-selection-list/blog-selectio
     IonButton,
     IonSpinner,
     BlogSelectionListComponent,
+    RouterLink,
   ],
 })
 export class AdminPage implements OnInit {

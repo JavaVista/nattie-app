@@ -117,3 +117,8 @@ ion-note {
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
+
+ion-avatar img {
+  object-fit: cover;
+  object-position: top;
+}

@@ -1,8 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Admin Dashboard</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Admin Panel</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="openCreateModal()">Add Microblog</ion-button>
+      <ion-button (click)="openCreateModal()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Microblog
+      </ion-button>
+      <ion-button routerLink="/home">
+        <ion-icon slot="icon-only" name="home-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
