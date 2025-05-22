@@ -65,7 +65,8 @@
           }
         </div>
 
-        <ion-button expand="block" (click)="generateUselessFacts()" [disabled]="shouldDisableUselessFacts()">
+        <ion-button shape="round" expand="block" (click)="generateUselessFacts()"
+          [disabled]="shouldDisableUselessFacts()">
           🧠 Generate Useless Facts
         </ion-button>
 
@@ -75,7 +76,7 @@
             Gallery Images
           </h4>
 
-          <ion-button expand="block" (click)="triggerFileInput()" color="medium">
+          <ion-button shape="round" expand="block" (click)="triggerFileInput()" color="medium">
             <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
             Select Images
           </ion-button>
@@ -115,7 +116,7 @@
             }
           </div>
 
-          <ion-button expand="full" (click)="createMicroblog()" [disabled]="!isFormValid()">
+          <ion-button shape="round" expand="full" (click)="createMicroblog()" [disabled]="!isFormValid()">
             Post
           </ion-button>
       </ion-card-content>
