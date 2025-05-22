@@ -78,6 +78,7 @@
   --ion-background-color-rgb: 255, 255, 255;
   --ion-text-color: #000000;
   --ion-text-color-rgb: 0, 0, 0;
+  --ion-shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -149,6 +150,7 @@
     --ion-color-light-contrast-rgb: 255, 255, 255;
     --ion-color-light-shade: #1e2023;
     --ion-color-light-tint: #383a3e;
+    --ion-shadow-color: rgba(255, 255, 255, 0.1);
   }
 
   /*
