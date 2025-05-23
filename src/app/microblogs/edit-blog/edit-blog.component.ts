@@ -6,7 +6,6 @@ import {
   signal,
   Signal,
 } from '@angular/core';
-import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -17,10 +16,7 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import {
-  QuillModule,
-  EditorChangeContent,
-  EditorChangeSelection,
-  QuillEditorComponent,
+  QuillModule
 } from 'ngx-quill';
 
 @Component({
@@ -54,17 +50,6 @@ export class EditBlogComponent implements OnInit {
   private supabaseService = inject(SupabaseService);
   private formBuilder = inject(FormBuilder);
   private toastCtrl = inject(ToastController);
-  private toolbarOptions = [
-    ['bold', 'italic', 'underline', 'blockquote'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ script: 'sub' }, { script: 'super' }],
-    [{ indent: '-1' }, { indent: '+1' }],
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    [{ color: [] }, { background: [] }],
-    [{ align: [] }],
-    ['link', 'image'],
-    ['clean'],
-  ];
 
   form = this.formBuilder.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
@@ -73,9 +58,6 @@ export class EditBlogComponent implements OnInit {
 
   galleryImages = signal<string[]>([]);
 
-  quillModules = {
-    toolbar: this.toolbarOptions,
-  };
 
   quillStyles = {
     height: '200px',

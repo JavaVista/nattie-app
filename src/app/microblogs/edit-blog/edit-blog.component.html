@@ -2,7 +2,7 @@
   <form [formGroup]="form">
     <ion-input label="Title" formControlName="title" required></ion-input>
 
-    <quill-editor [style]="{ height: '200px' }" formControlName="content" format="object">
+    <quill-editor formControlName="content" [styles]="quillStyles" format="object" >
     </quill-editor>
 
     <h4>Gallery</h4>
@@ -10,7 +10,7 @@
       @for (img of galleryImages(); track $index) {
       <div class="thumb-wrapper">
         <img [src]="img" />
-        <ion-button fill="clear" size="small" color="danger" (click)="removeImage($index)">
+        <ion-button shape="round" fill="solid" size="small" color="danger" (click)="removeImage($index)">
           <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </div>
