@@ -76,7 +76,7 @@ import { MarkdownPipe } from 'src/app/shared/markdown.pipe';
     LocationSelectComponent,
     PlaceSelectComponent,
     IonIcon,
-    MarkdownPipe
+    MarkdownPipe,
   ],
 })
 export class CreateMicroblogComponent implements OnInit, AfterViewInit {
@@ -98,10 +98,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   private aiService = inject(AiService);
   private placeService = inject(PlaceService);
   private imagePreviews = signal<string[]>([]);
-
-  @ViewChild(QuillEditorComponent) editorComponent?: QuillEditorComponent;
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-
   private toolbarOptions = [
     ['bold', 'italic', 'underline', 'blockquote'],
     [{ list: 'ordered' }, { list: 'bullet' }],
@@ -113,6 +109,9 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     ['link', 'image'],
     ['clean'],
   ];
+
+  @ViewChild(QuillEditorComponent) editorComponent?: QuillEditorComponent;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   quillModules = {
     toolbar: this.toolbarOptions,

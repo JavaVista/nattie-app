@@ -14,6 +14,7 @@ import {
   IonContent,
   IonButton,
   IonInput,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import {
   QuillModule,
@@ -27,22 +28,32 @@ import {
   templateUrl: './edit-blog.component.html',
   styleUrls: ['./edit-blog.component.scss'],
   standalone: true,
-  imports: [ReactiveFormsModule, IonContent, IonButton, IonInput, QuillModule],
+  imports: [
+    IonIcon,
+    ReactiveFormsModule,
+    IonContent,
+    IonButton,
+    IonInput,
+    QuillModule,
+  ],
 })
 export class EditBlogComponent implements OnInit {
-  @Input({ required: true }) blog!: Signal<Microblog>;
+  @Input() blog!: Signal<{
+    id: string;
+    location_image: string;
+    title: string;
+    city: string;
+    country: string;
+    created_at: string | Date;
+    content: any;
+    useless_facts: string[];
+    place?: { place_name: string; place_photo?: string };
+    gallery_images: string[];
+  }>;
 
   private supabaseService = inject(SupabaseService);
   private formBuilder = inject(FormBuilder);
   private toastCtrl = inject(ToastController);
-
-  form = this.formBuilder.group({
-    title: ['', [Validators.required, Validators.minLength(5)]],
-    content: ['', [Validators.required, Validators.minLength(10)]],
-  });
-
-  galleryImages = signal<string[]>([]);
-
   private toolbarOptions = [
     ['bold', 'italic', 'underline', 'blockquote'],
     [{ list: 'ordered' }, { list: 'bullet' }],
@@ -54,6 +65,13 @@ export class EditBlogComponent implements OnInit {
     ['link', 'image'],
     ['clean'],
   ];
+
+  form = this.formBuilder.group({
+    title: ['', [Validators.required, Validators.minLength(5)]],
+    content: ['', [Validators.required, Validators.minLength(10)]],
+  });
+
+  galleryImages = signal<string[]>([]);
 
   quillModules = {
     toolbar: this.toolbarOptions,
@@ -71,7 +89,7 @@ export class EditBlogComponent implements OnInit {
       content: this.blog().content,
     });
 
-    this.galleryImages.set(this.blog().file_urls || []);
+    this.galleryImages.set(this.blog().gallery_images || []);
   }
 
   removeImage(index: number) {
@@ -90,9 +108,10 @@ export class EditBlogComponent implements OnInit {
     };
 
     const { error } = await this.supabaseService.updateMicroblog(
-      this.blog().id!,
+      this.blog().id,
       updates
     );
+
     const toast = await this.toastCtrl.create({
       message: error
         ? `Error: ${error.message}`

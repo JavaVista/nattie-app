@@ -14,6 +14,7 @@ import {
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
 import { BlogViewComponent } from '../blog-view/blog-view.component';
+import { EditBlogComponent } from '../edit-blog/edit-blog.component';
 
 @Component({
   selector: 'app-microblog',
@@ -32,12 +33,15 @@ import { BlogViewComponent } from '../blog-view/blog-view.component';
     IonMenuButton,
     IonIcon,
     RouterLink,
+    EditBlogComponent,
   ],
 })
 export class MicroblogPage implements OnInit {
   private route = inject(ActivatedRoute);
   private supabase = inject(SupabaseService);
+  private mode = this.route.snapshot.queryParamMap.get('mode');
 
+  isEditMode = computed(() => this.mode === 'edit');
   blog = signal<Microblog | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
@@ -54,6 +58,7 @@ export class MicroblogPage implements OnInit {
       'assets/images/EuroTrip.png'; // Default fallback
 
     return signal({
+      id: blog?.id || '',
       location_image: locationImage,
       title: blog?.title || '',
       city: blog?.locations?.city || '',

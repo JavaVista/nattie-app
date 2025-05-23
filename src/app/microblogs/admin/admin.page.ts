@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   IonMenuButton,
   IonIcon,
@@ -15,7 +15,7 @@ import { Microblog } from '../microblogs.model';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { CreateMicroblogComponent } from '../create-microblog/create-microblog.component';
 import { BlogSelectionListComponent } from '../blog-selection-list/blog-selection-list.component';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -43,6 +43,7 @@ export class AdminPage implements OnInit {
 
   private supabaseService = inject(SupabaseService);
   private modalCtrl = inject(ModalController);
+  private router = inject(Router);
 
   ngOnInit() {
     this.loadMicroblogs();
@@ -86,9 +87,12 @@ export class AdminPage implements OnInit {
   }
 
   async editMicroblog(blog: Microblog) {
-    const updatedBlog = { ...blog, title: 'Updated Title' };
-    await this.supabaseService.updateMicroblog(blog.id!, updatedBlog);
-    await this.loadMicroblogs();
+    console.log(' AdminPage 👉 blog:', blog);
+    this.router.navigate(['/microblog', blog.id], {
+      queryParams: {
+        mode: 'edit',
+      },
+    });
   }
 
   async openCreateModal() {

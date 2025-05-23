@@ -14,19 +14,27 @@
 
 <ion-content [fullscreen]="true">
   @if (isLoading()) {
-  <div class="loading-container">
-    <ion-spinner name="circular"></ion-spinner>
-    <p>Loading blog...</p>
-  </div>
+    <div class="loading-container">
+      <ion-spinner name="circular"></ion-spinner>
+      <p>Loading blog...</p>
+    </div>
   } @else if (error()) {
-  <div class="error-container">
-    <p>{{ error() }}</p>
-  </div>
+    <div class="error-container">
+      <p>{{ error() }}</p>
+    </div>
   } @else if (!blog()) {
-  <div class="empty-state">
-    <p>No blog found</p>
-  </div>
-  } @else if (transformedBlog()) {
-  <app-blog-view [blog]="transformedBlog()!"></app-blog-view>
+    <div class="empty-state">
+      <p>No blog found</p>
+    </div>
+  } @else if (transformedBlog()) { 
+      @switch (isEditMode()) {
+        @case (true) {
+          <app-edit-blog [blog]="transformedBlog()!"></app-edit-blog>
+        }
+        @default {
+          <app-blog-view [blog]="transformedBlog()!"></app-blog-view>
+        }
+      }
   }
+  
 </ion-content>
