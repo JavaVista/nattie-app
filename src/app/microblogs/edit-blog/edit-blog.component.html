@@ -1,0 +1,24 @@
+<ion-content [fullscreen]="true">
+  <form [formGroup]="form">
+    <ion-input label="Title" formControlName="title" required></ion-input>
+
+    <quill-editor [style]="{ height: '200px' }" formControlName="content">
+    </quill-editor>
+
+    <h4>Gallery</h4>
+    <div class="gallery-grid">
+      @for (img of galleryImages(); track $index) {
+      <div class="thumb-wrapper">
+        <img [src]="img" />
+        <ion-button fill="clear" size="small" color="danger" (click)="removeImage($index)">
+          ✕
+        </ion-button>
+      </div>
+      }
+    </div>
+
+    <ion-button expand="block" color="success" (click)="saveChanges()" [disabled]="form.invalid">
+      Save Changes
+    </ion-button>
+  </form>
+</ion-content>
