@@ -1,14 +1,21 @@
-<ion-header class="ion-no-border">
+<ion-header [class.ion-no-border]="!isEditMode()">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-back-button></ion-back-button>
-      <ion-button routerLink="/home">
-        <ion-icon slot="icon-only" name="home-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    @if (!isEditMode()) {
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-back-button></ion-back-button>
+          <ion-button routerLink="/home">
+            <ion-icon slot="icon-only" name="home-outline"></ion-icon>
+          </ion-button>
+      </ion-buttons>
+    } @else {
+      <ion-title>Edit Microblog</ion-title>
+      <ion-buttons slot="end">
+        <ion-button routerLink="/admin">Cancel</ion-button>
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 

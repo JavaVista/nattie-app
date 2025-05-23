@@ -10,6 +10,7 @@ import {
   IonMenuButton,
   IonButton,
   IonIcon,
+  IonTitle
 } from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
@@ -34,6 +35,7 @@ import { EditBlogComponent } from '../edit-blog/edit-blog.component';
     IonIcon,
     RouterLink,
     EditBlogComponent,
+    IonTitle
   ],
 })
 export class MicroblogPage implements OnInit {
