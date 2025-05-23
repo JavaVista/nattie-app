@@ -14,9 +14,14 @@ import {
   IonButton,
   IonInput,
   IonIcon,
+  IonCard,
+  IonCardContent,
+  IonLabel,
 } from '@ionic/angular/standalone';
 import {
-  QuillModule
+  QuillModule,
+  EditorChangeContent,
+  EditorChangeSelection,
 } from 'ngx-quill';
 
 @Component({
@@ -30,6 +35,9 @@ import {
     IonContent,
     IonButton,
     IonInput,
+    IonCard,
+    IonCardContent,
+    IonLabel,
     QuillModule,
   ],
 })
@@ -58,7 +66,6 @@ export class EditBlogComponent implements OnInit {
 
   galleryImages = signal<string[]>([]);
 
-
   quillStyles = {
     height: '200px',
     background: 'white',
@@ -72,6 +79,18 @@ export class EditBlogComponent implements OnInit {
     });
 
     this.galleryImages.set(this.blog().gallery_images || []);
+  }
+
+  onEditorChange(event: EditorChangeContent | EditorChangeSelection) {
+    if (event.event !== 'text-change') return;
+
+    const deltaContent = event['editor'].getContents();
+    console.log(' EditBlogComponent 👉 deltaContent:', deltaContent);
+
+    this.form.controls['content'].setValue(JSON.stringify(deltaContent));
+
+    this.form.controls['content'].markAsTouched();
+    this.form.controls['content'].markAsDirty();
   }
 
   removeImage(index: number) {
