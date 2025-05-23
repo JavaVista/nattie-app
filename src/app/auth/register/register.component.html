@@ -36,10 +36,12 @@
     </ion-text>
     }
 
-    @if (isLoading()) {
-    <ion-spinner name="crescent"></ion-spinner>
-    }
-
     <ion-button shape="round" expand="block" (click)="signUp()" [disabled]="isLoading()">Register</ion-button>
+
+    @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+    }
 
   </ion-content>

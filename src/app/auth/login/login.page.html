@@ -19,11 +19,14 @@
   </ion-list>
 
 
-  @if (isLoading()) {
-  <ion-spinner name="crescent"></ion-spinner>
-  }
-
   <ion-button shape="round" expand="block" (click)="onSignIn()" [disabled]="isLoading()">Log In</ion-button>
   <ion-button fill="clear" (click)="onRegister()">Register</ion-button>
   <ion-button expand="block" fill="clear" (click)="onCancel()">Cancel</ion-button>
+
+  @if (isLoading()) {
+  <div class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+  }
+
 </ion-content>
