@@ -35,12 +35,7 @@ import {
 } from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Microblog } from '../microblogs.model';
-import {
-  QuillModule,
-  EditorChangeContent,
-  EditorChangeSelection,
-  QuillEditorComponent,
-} from 'ngx-quill';
+import { QuillModule, QuillEditorComponent } from 'ngx-quill';
 import Quill, { Range } from 'quill';
 import { AiService } from 'src/app/services/ai.service';
 import { LocationSelectComponent } from 'src/app/locations/location-select/location-select.component';
@@ -136,7 +131,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     });
     this.form = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
-      content: ['', [Validators.required, Validators.minLength(10)]],
+      content: ['', [Validators.required]],
     });
   }
 
@@ -187,20 +182,6 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   onLocationSelected(location: Location | null) {
     this.selectedLocation.set(location);
     this.selectedPlace.set(null);
-    this.updateFormValidity();
-  }
-
-  onEditorChange(event: EditorChangeContent | EditorChangeSelection) {
-    if (event.event !== 'text-change') return;
-    // HTML & Text (for storing and rendering later)
-    const htmlContent = event['editor']['root'].innerHTML;
-    const plainTextContent = event['editor'].getText().trim();
-    const deltaContent = event['editor'].getContents();
-
-    this.form.controls['content'].setValue(JSON.stringify(deltaContent));
-
-    this.form.controls['content'].markAsTouched();
-    this.form.controls['content'].markAsDirty();
     this.updateFormValidity();
   }
 
@@ -338,14 +319,14 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       }
     }
 
-    const deltaContent = JSON.parse(this.form.value.content);
+    const contentValue = this.form.get('content')?.value;
     const location = this.selectedLocation();
     const place = this.selectedPlace();
 
     const newMicroblog: Microblog = {
       user_id: userId,
       title: this.form.value.title,
-      content: deltaContent,
+      content: contentValue,
       location_id: location?.id,
       country: location?.country,
       useless_facts:

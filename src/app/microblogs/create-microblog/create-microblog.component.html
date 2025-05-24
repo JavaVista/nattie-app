@@ -11,32 +11,41 @@
   <form [formGroup]="form">
     <ion-card>
       <ion-card-content>
-
-        <ion-label>Title</ion-label> <ion-input formControlName="title" placeholder="Enter a blog title"
-          [counter]="true" maxlength="40" [clearInput]="true"></ion-input>
+        <ion-label>Title</ion-label>
+        <ion-input
+          formControlName="title"
+          placeholder="Enter a blog title"
+          [counter]="true"
+          maxlength="40"
+          [clearInput]="true"
+        ></ion-input>
         @if (form.get('title')?.touched && form.get('title')?.invalid) {
-        <p class="error">
-          Title is required (min 5 characters).
-        </p>
+        <p class="error">Title is required (min 5 characters).</p>
         }
 
-        <app-location-select (locationSelected)="onLocationSelected($event)"></app-location-select>
+        <app-location-select
+          (locationSelected)="onLocationSelected($event)"
+        ></app-location-select>
         @if (!selectedLocation()) {
-        <p class="error">
-          Please select a location.
-        </p>
+        <p class="error">Please select a location.</p>
         }
 
-        <quill-editor (onEditorChanged)="onEditorChange($event)" [modules]="quillModules" [styles]="quillStyles"
-          [placeholder]="'Write your content here...'">
+        <quill-editor
+          formControlName="content"
+          [modules]="quillModules"
+          [styles]="quillStyles"
+          [placeholder]="'Write your blog content here...'"
+          [minLength]="40"
+          [required]="true"
+        >
         </quill-editor>
         @if (form.get('content')?.touched && form.get('content')?.invalid) {
         <div class="error">
-          Content must be at least 10 characters.
+          @if (form.get('content')?.errors?.['required']) { Content is required.
+          } @else if (form.get('content')?.errors?.['minLengthError']) { Content
+          must be at least 40 characters. }
         </div>
-        }
-
-        @if (uselessFacts().length > 0) {
+        } @if (uselessFacts().length > 0) {
         <ion-card>
           <ion-card-header>
             <ion-card-title>Useless Facts</ion-card-title>
@@ -53,11 +62,12 @@
 
         <div class="place-selection-container">
           @if (placesLoaded()) {
-          <app-place-select (placeSelected)="onPlaceSelected($event)" [selectedLocationId]="selectedLocation()?.id">
+          <app-place-select
+            (placeSelected)="onPlaceSelected($event)"
+            [selectedLocationId]="selectedLocation()?.id"
+          >
           </app-place-select>
-          }
-
-          @if (!selectedLocation()) {
+          } @if (!selectedLocation()) {
           <div class="required-location-message">
             <ion-icon name="information-circle-outline"></ion-icon>
             Please select a location first to enable place selection
@@ -65,8 +75,12 @@
           }
         </div>
 
-        <ion-button shape="round" expand="block" (click)="generateUselessFacts()"
-          [disabled]="shouldDisableUselessFacts()">
+        <ion-button
+          shape="round"
+          expand="block"
+          (click)="generateUselessFacts()"
+          [disabled]="shouldDisableUselessFacts()"
+        >
           🧠 Generate Useless Facts
         </ion-button>
 
@@ -76,13 +90,24 @@
             Gallery Images
           </h4>
 
-          <ion-button shape="round" expand="block" (click)="triggerFileInput()" color="medium">
+          <ion-button
+            shape="round"
+            expand="block"
+            (click)="triggerFileInput()"
+            color="medium"
+          >
             <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
             Select Images
           </ion-button>
 
           <!-- Hidden file input, triggered by the button -->
-          <input type="file" multiple #fileInput (change)="handleFileInput($event)" style="display: none" />
+          <input
+            type="file"
+            multiple
+            #fileInput
+            (change)="handleFileInput($event)"
+            style="display: none"
+          />
 
           <!-- Preview of selected images -->
           @if (files().length > 0) {
@@ -92,7 +117,12 @@
               <ion-label>{{ files().length }} images selected</ion-label>
             </ion-chip>
 
-            <ion-button size="small" fill="clear" color="danger" (click)="clearSelectedFiles()">
+            <ion-button
+              size="small"
+              fill="clear"
+              color="danger"
+              (click)="clearSelectedFiles()"
+            >
               <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </div>
@@ -109,19 +139,26 @@
           <!-- Upload progress -->
           @if (uploadProgress() > 0) {
           <div class="upload-progress-container">
-            <ion-progress-bar [value]="uploadProgress() / 100"></ion-progress-bar>
+            <ion-progress-bar
+              [value]="uploadProgress() / 100"
+            ></ion-progress-bar>
             <div class="progress-text">
-              @if (uploadProgress() < 100) { Uploading: {{ uploadProgress() }}% } @else { Upload complete! } </div>
+              @if (uploadProgress() < 100) { Uploading: {{ uploadProgress() }}%
+              } @else { Upload complete! }
             </div>
-            }
           </div>
+          }
+        </div>
 
-          <ion-button shape="round" expand="full" (click)="createMicroblog()" [disabled]="!isFormValid()">
-            Post
-          </ion-button>
+        <ion-button
+          shape="round"
+          expand="full"
+          (click)="createMicroblog()"
+          [disabled]="!isFormValid()"
+        >
+          Post
+        </ion-button>
       </ion-card-content>
     </ion-card>
   </form>
-
-
 </ion-content>

@@ -16,14 +16,20 @@
         }
 
         <quill-editor
-          (onEditorChanged)="onEditorChange($event)"
           formControlName="content"
           format="object"
           [styles]="quillStyles"
+          [placeholder]="'Edit your blog content here...'"
+          [minLength]="40"
+          [required]="true"
         >
         </quill-editor>
         @if (form.get('content')?.touched && form.get('content')?.invalid) {
-        <div class="error">Content must be at least 10 characters.</div>
+        <div class="error">
+          @if (form.get('content')?.errors?.['required']) { Content is required.
+          } @else if (form.get('content')?.errors?.['minLengthError']) { Content
+          must be at least 40 characters. }
+        </div>
         }
 
         <div class="file-upload-container">

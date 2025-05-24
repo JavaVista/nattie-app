@@ -18,11 +18,8 @@ import {
   IonCardContent,
   IonLabel,
 } from '@ionic/angular/standalone';
-import {
-  QuillModule,
-  EditorChangeContent,
-  EditorChangeSelection,
-} from 'ngx-quill';
+import { QuillModule } from 'ngx-quill';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-blog',
@@ -58,10 +55,11 @@ export class EditBlogComponent implements OnInit {
   private supabaseService = inject(SupabaseService);
   private formBuilder = inject(FormBuilder);
   private toastCtrl = inject(ToastController);
+  private router = inject(Router);
 
   form = this.formBuilder.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
-    content: ['', [Validators.required, Validators.minLength(10)]],
+    content: ['', [Validators.required]],
   });
 
   galleryImages = signal<string[]>([]);
@@ -79,18 +77,6 @@ export class EditBlogComponent implements OnInit {
     });
 
     this.galleryImages.set(this.blog().gallery_images || []);
-  }
-
-  onEditorChange(event: EditorChangeContent | EditorChangeSelection) {
-    if (event.event !== 'text-change') return;
-
-    const deltaContent = event['editor'].getContents();
-    console.log(' EditBlogComponent 👉 deltaContent:', deltaContent);
-
-    this.form.controls['content'].setValue(JSON.stringify(deltaContent));
-
-    this.form.controls['content'].markAsTouched();
-    this.form.controls['content'].markAsDirty();
   }
 
   removeImage(index: number) {
@@ -122,5 +108,7 @@ export class EditBlogComponent implements OnInit {
     });
 
     await toast.present();
+
+    this.router.navigate(['/admin']);
   }
 }
