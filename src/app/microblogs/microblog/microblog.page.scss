@@ -3,7 +3,7 @@
   --ion-safe-area-bottom: env(safe-area-inset-bottom);
 }
 
-ion-header {
+.transparent-header {
   position: absolute;
   width: 100%;
   top: var(--ion-safe-area-top, 0);

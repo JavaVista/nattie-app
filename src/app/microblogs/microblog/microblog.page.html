@@ -1,4 +1,4 @@
-<ion-header [class.ion-no-border]="!isEditMode()">
+<ion-header [class.transparent-header]="!isEditMode()">
   <ion-toolbar>
     @if (!isEditMode()) {
       <ion-buttons slot="start">
@@ -33,7 +33,7 @@
     <div class="empty-state">
       <p>No blog found</p>
     </div>
-  } @else if (transformedBlog()) { 
+  } @else if (transformedBlog()) {
       @switch (isEditMode()) {
         @case (true) {
           <app-edit-blog [blog]="transformedBlog()!"></app-edit-blog>
@@ -43,5 +43,5 @@
         }
       }
   }
-  
+
 </ion-content>
