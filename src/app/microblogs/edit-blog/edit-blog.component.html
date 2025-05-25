@@ -54,6 +54,67 @@
             </div>
             }
           </div>
+
+          <!-- Add Image Upload Button -->
+          <ion-button
+            shape="round"
+            expand="block"
+            (click)="triggerFileInput()"
+            color="medium"
+            class="mt-3"
+          >
+            <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+            Add Images
+          </ion-button>
+
+          <!-- Hidden file input -->
+          <input
+            type="file"
+            multiple
+            #fileInput
+            (change)="handleFileInput($event)"
+            style="display: none"
+          />
+
+          <!-- Preview of new images -->
+          @if (files().length > 0) {
+          <div class="selected-files-info">
+            <ion-chip color="primary">
+              <ion-icon name="images"></ion-icon>
+              <ion-label>{{ files().length }} new images selected</ion-label>
+            </ion-chip>
+
+            <ion-button
+              size="small"
+              fill="clear"
+              color="danger"
+              (click)="clearSelectedFiles()"
+            >
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="image-preview-container">
+            @for (file of files(); track $index) {
+            <div class="image-preview">
+              <img [src]="getImagePreviewUrl(file)" alt="Preview" />
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Upload progress -->
+          @if (uploadProgress() > 0) {
+          <div class="upload-progress-container">
+            <ion-progress-bar
+              [value]="uploadProgress() / 100"
+            ></ion-progress-bar>
+            <div class="progress-text">
+              @if (uploadProgress() < 100) { Uploading: {{ uploadProgress() }}%
+              } @else { Upload complete! }
+            </div>
+          </div>
+          }
         </div>
 
         <ion-button

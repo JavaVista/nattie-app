@@ -1,10 +1,13 @@
 import {
   Component,
+  ElementRef,
   inject,
   Input,
   OnInit,
   signal,
   Signal,
+  ViewChild,
+  computed,
 } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -17,6 +20,8 @@ import {
   IonCard,
   IonCardContent,
   IonLabel,
+  IonChip,
+  IonProgressBar,
 } from '@ionic/angular/standalone';
 import { QuillModule } from 'ngx-quill';
 import { Router } from '@angular/router';
@@ -36,6 +41,8 @@ import { Router } from '@angular/router';
     IonCardContent,
     IonLabel,
     QuillModule,
+    IonChip,
+    IonProgressBar,
   ],
 })
 export class EditBlogComponent implements OnInit {
@@ -52,6 +59,8 @@ export class EditBlogComponent implements OnInit {
     gallery_images: string[];
   }>;
 
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   private supabaseService = inject(SupabaseService);
   private formBuilder = inject(FormBuilder);
   private toastCtrl = inject(ToastController);
@@ -63,6 +72,9 @@ export class EditBlogComponent implements OnInit {
   });
 
   galleryImages = signal<string[]>([]);
+  files = signal<File[]>([]);
+  uploadProgress = signal(0);
+  private imagePreviews = signal<string[]>([]);
 
   quillStyles = {
     height: '200px',
@@ -85,13 +97,84 @@ export class EditBlogComponent implements OnInit {
     this.galleryImages.set(updated);
   }
 
+  triggerFileInput() {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  handleFileInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      // Store the files
+      this.files.set(Array.from(input.files));
+
+      // Generate previews
+      const previews: string[] = [];
+      Array.from(input.files).forEach((file) => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            previews.push(e.target.result);
+            this.imagePreviews.set([...previews]);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+  }
+
+  clearSelectedFiles() {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+    this.files.set([]);
+    this.imagePreviews.set([]);
+  }
+
+  getImagePreviewUrl(file: File): string {
+    const index = this.files().indexOf(file);
+    return this.imagePreviews()[index] || '';
+  }
+
   async saveChanges() {
     if (this.form.invalid) return;
+
+    // Upload new images if any
+    const newFileUrls: string[] = [];
+
+    if (this.files().length > 0) {
+      const totalFiles = this.files().length;
+      let uploadedCount = 0;
+
+      for (const file of this.files()) {
+        const { publicUrl, error } = await this.supabaseService.uploadFile(
+          'microblog-media',
+          file
+        );
+        if (error) {
+          console.error('File upload failed:', error.message);
+          const toast = await this.toastCtrl.create({
+            message: `Error uploading image: ${error.message}`,
+            duration: 2000,
+            color: 'danger',
+          });
+          await toast.present();
+          return;
+        }
+        newFileUrls.push(publicUrl!);
+        uploadedCount++;
+        this.uploadProgress.set(Math.round((uploadedCount / totalFiles) * 100));
+      }
+    }
+
+    // Combine existing and new images
+    const combinedGalleryImages = [...this.galleryImages(), ...newFileUrls];
 
     const updates = {
       title: this.form.value.title ?? undefined,
       content: this.form.value.content ?? undefined,
-      file_urls: this.galleryImages(),
+      file_urls: combinedGalleryImages,
     };
 
     const { error } = await this.supabaseService.updateMicroblog(
@@ -109,6 +192,17 @@ export class EditBlogComponent implements OnInit {
 
     await toast.present();
 
-    this.router.navigate(['/admin']);
+    if (!error) {
+      // Reset file uploads after successful save
+      this.files.set([]);
+      this.imagePreviews.set([]);
+      this.uploadProgress.set(0);
+
+      // Update the gallery images to include the new uploads
+      this.galleryImages.set(combinedGalleryImages);
+
+      // Navigate back to admin page after successful save
+      this.router.navigate(['/admin']);
+    }
   }
 }
