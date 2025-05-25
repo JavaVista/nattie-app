@@ -22,9 +22,11 @@ import {
   IonLabel,
   IonChip,
   IonProgressBar,
+  IonSpinner
 } from '@ionic/angular/standalone';
 import { QuillModule } from 'ngx-quill';
 import { Router } from '@angular/router';
+import { FileUtilsService } from 'src/app/services/file-utils.service';
 
 @Component({
   selector: 'app-edit-blog',
@@ -43,6 +45,7 @@ import { Router } from '@angular/router';
     QuillModule,
     IonChip,
     IonProgressBar,
+    IonSpinner
   ],
 })
 export class EditBlogComponent implements OnInit {
@@ -65,6 +68,7 @@ export class EditBlogComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private toastCtrl = inject(ToastController);
   private router = inject(Router);
+  private fileUtils = inject(FileUtilsService);
 
   form = this.formBuilder.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
@@ -74,7 +78,8 @@ export class EditBlogComponent implements OnInit {
   galleryImages = signal<string[]>([]);
   files = signal<File[]>([]);
   uploadProgress = signal(0);
-  private imagePreviews = signal<string[]>([]);
+  imagePreviews = signal<string[]>([]);
+  conversionProgress = signal<number[]>([]);
 
   quillStyles = {
     height: '200px',
@@ -103,25 +108,87 @@ export class EditBlogComponent implements OnInit {
     }
   }
 
-  handleFileInput(event: Event) {
+  async handleFileInput(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files) {
-      // Store the files
-      this.files.set(Array.from(input.files));
+    if (!input.files || input.files.length === 0) return;
 
-      // Generate previews
-      const previews: string[] = [];
-      Array.from(input.files).forEach((file) => {
-        if (file.type.startsWith('image/')) {
+    // Store the original
+    const originalFiles = Array.from(input.files);
+    this.files.set(originalFiles);
+
+    // Create arrays to store preview data
+    const previews: string[] = [];
+    const processedFiles: File[] = [];
+    const progressArray: number[] = new Array(originalFiles.length).fill(0);
+
+    // Update the progress
+    this.conversionProgress.set(progressArray);
+
+    // Process each file for preview
+    for (let i = 0; i < originalFiles.length; i++) {
+      const file = originalFiles[i];
+
+      try {
+        // Process HEIC files immediately
+        if (this.fileUtils.isHeicFile(file)) {
+
+          const convertedFile = await this.fileUtils.convertHeicToJpeg(file, (progress) => {
+            // Update progress for this file
+            const updatedProgress = [...this.conversionProgress()];
+            updatedProgress[i] = progress;
+            this.conversionProgress.set(updatedProgress);
+          });
+          processedFiles[i] = convertedFile;
+
+          // Generate preview from the converted file
           const reader = new FileReader();
           reader.onload = (e: any) => {
-            previews.push(e.target.result);
+            previews[i] = e.target.result;
+            this.imagePreviews.set([...previews]);
+          };
+          reader.readAsDataURL(convertedFile);
+        } else if (file.type.startsWith('image/')) {
+          // For non-HEIC images, use them directly
+          processedFiles[i] = file;
+
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            previews[i] = e.target.result;
             this.imagePreviews.set([...previews]);
           };
           reader.readAsDataURL(file);
+
+          // Mark as complete immediately
+          const updatedProgress = [...this.conversionProgress()];
+          updatedProgress[i] = 100;
+          this.conversionProgress.set(updatedProgress);
+        } else {
+          // For non-image files (if any), use placeholder
+          processedFiles[i] = file;
+          previews[i] = 'assets/images/file-placeholder.png';
+          this.imagePreviews.set([...previews]);
+
+          // Mark as complete immediately
+          const updatedProgress = [...this.conversionProgress()];
+          updatedProgress[i] = 100;
+          this.conversionProgress.set(updatedProgress);
         }
-      });
+      } catch (error) {
+        console.error('Error processing file for preview:', error);
+        // Use a placeholder on error
+        processedFiles[i] = file;
+        previews[i] = 'assets/images/file-error-placeholder.png';
+        this.imagePreviews.set([...previews]);
+
+        // Mark as complete with error
+        const updatedProgress = [...this.conversionProgress()];
+        updatedProgress[i] = 100;
+        this.conversionProgress.set(updatedProgress);
+      }
     }
+
+    // Update the files array with processed files
+    this.files.set(processedFiles);
   }
 
   clearSelectedFiles() {
@@ -130,11 +197,33 @@ export class EditBlogComponent implements OnInit {
     }
     this.files.set([]);
     this.imagePreviews.set([]);
+    this.conversionProgress.set([]);
   }
 
   getImagePreviewUrl(file: File): string {
     const index = this.files().indexOf(file);
     return this.imagePreviews()[index] || '';
+  }
+
+  getFileConversionProgress(index: number): number {
+    return this.conversionProgress()[index] || 0;
+  }
+
+  removeSelectedFile(index: number) {
+    // Create copies of the arrays to modify
+    const updatedFiles = [...this.files()];
+    const updatedPreviews = [...this.imagePreviews()];
+    const updatedProgress = [...this.conversionProgress()];
+
+    // Remove the file at the specified index
+    updatedFiles.splice(index, 1);
+    updatedPreviews.splice(index, 1);
+    updatedProgress.splice(index, 1);
+
+    // Update the signals
+    this.files.set(updatedFiles);
+    this.imagePreviews.set(updatedPreviews);
+    this.conversionProgress.set(updatedProgress);
   }
 
   async saveChanges() {
@@ -148,23 +237,41 @@ export class EditBlogComponent implements OnInit {
       let uploadedCount = 0;
 
       for (const file of this.files()) {
-        const { publicUrl, error } = await this.supabaseService.uploadFile(
-          'microblog-media',
-          file
-        );
-        if (error) {
-          console.error('File upload failed:', error.message);
+        try {
+          // Convert HEIC to JPEG if needed
+          const processedFile = await this.fileUtils.convertHeicToJpeg(file);
+
+          const { publicUrl, error } = await this.supabaseService.uploadFile(
+            'microblog-media',
+            processedFile
+          );
+
+          if (error) {
+            console.error('File upload failed:', error.message);
+            const toast = await this.toastCtrl.create({
+              message: `Error uploading image: ${error.message}`,
+              duration: 3000,
+              color: 'danger',
+              position: 'bottom'
+            });
+            await toast.present();
+            return;
+          }
+
+          newFileUrls.push(publicUrl!);
+          uploadedCount++;
+          this.uploadProgress.set(Math.round((uploadedCount / totalFiles) * 100));
+        } catch (err) {
+          console.error('Unexpected error during file processing:', err);
           const toast = await this.toastCtrl.create({
-            message: `Error uploading image: ${error.message}`,
-            duration: 2000,
+            message: `Error processing image: ${err instanceof Error ? err.message : 'Unknown error'}`,
+            duration: 3000,
             color: 'danger',
+            position: 'bottom'
           });
           await toast.present();
           return;
         }
-        newFileUrls.push(publicUrl!);
-        uploadedCount++;
-        this.uploadProgress.set(Math.round((uploadedCount / totalFiles) * 100));
       }
     }
 
@@ -197,6 +304,7 @@ export class EditBlogComponent implements OnInit {
       this.files.set([]);
       this.imagePreviews.set([]);
       this.uploadProgress.set(0);
+      this.conversionProgress.set([]);
 
       // Update the gallery images to include the new uploads
       this.galleryImages.set(combinedGalleryImages);

@@ -38,6 +38,7 @@
             Gallery Images
           </h4>
 
+          <!-- Existing gallery -->
           <div class="image-preview-container">
             @for (img of galleryImages(); track $index) {
             <div class="image-preview">
@@ -97,7 +98,29 @@
           <div class="image-preview-container">
             @for (file of files(); track $index) {
             <div class="image-preview">
+              @if (getFileConversionProgress($index) < 100 ||
+              !imagePreviews()[$index]) {
+              <div class="image-loading">
+                <ion-spinner name="dots"></ion-spinner>
+                <small>Processing...</small>
+                <ion-progress-bar
+                  [value]="getFileConversionProgress($index) / 100"
+                ></ion-progress-bar>
+              </div>
+              } @else {
               <img [src]="getImagePreviewUrl(file)" alt="Preview" />
+              }
+
+              <!-- Individual file remove -->
+              <ion-button
+                shape="round"
+                fill="solid"
+                size="small"
+                color="danger"
+                (click)="removeSelectedFile($index)"
+              >
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
             </div>
             }
           </div>

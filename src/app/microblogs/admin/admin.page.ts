@@ -87,7 +87,6 @@ export class AdminPage implements OnInit {
   }
 
   async editMicroblog(blog: Microblog) {
-    console.log(' AdminPage 👉 blog:', blog);
     this.router.navigate(['/microblog', blog.id], {
       queryParams: {
         mode: 'edit',

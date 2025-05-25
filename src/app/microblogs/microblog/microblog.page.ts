@@ -96,8 +96,6 @@ export class MicroblogPage implements OnInit {
         throw error;
       }
 
-      console.log('fetch data...', data);
-
       if (!data) {
         throw new Error('Blog not found');
       }
