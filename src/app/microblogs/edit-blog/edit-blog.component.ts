@@ -22,7 +22,7 @@ import {
   IonLabel,
   IonChip,
   IonProgressBar,
-  IonSpinner
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { QuillModule } from 'ngx-quill';
 import { Router } from '@angular/router';
@@ -45,7 +45,7 @@ import { FileUtilsService } from 'src/app/services/file-utils.service';
     QuillModule,
     IonChip,
     IonProgressBar,
-    IonSpinner
+    IonSpinner,
   ],
 })
 export class EditBlogComponent implements OnInit {
@@ -131,13 +131,15 @@ export class EditBlogComponent implements OnInit {
       try {
         // Process HEIC files immediately
         if (this.fileUtils.isHeicFile(file)) {
-
-          const convertedFile = await this.fileUtils.convertHeicToJpeg(file, (progress) => {
-            // Update progress for this file
-            const updatedProgress = [...this.conversionProgress()];
-            updatedProgress[i] = progress;
-            this.conversionProgress.set(updatedProgress);
-          });
+          const convertedFile = await this.fileUtils.convertHeicToJpeg(
+            file,
+            (progress) => {
+              // Update progress for this file
+              const updatedProgress = [...this.conversionProgress()];
+              updatedProgress[i] = progress;
+              this.conversionProgress.set(updatedProgress);
+            }
+          );
           processedFiles[i] = convertedFile;
 
           // Generate preview from the converted file
@@ -252,7 +254,7 @@ export class EditBlogComponent implements OnInit {
               message: `Error uploading image: ${error.message}`,
               duration: 3000,
               color: 'danger',
-              position: 'bottom'
+              position: 'bottom',
             });
             await toast.present();
             return;
@@ -260,14 +262,18 @@ export class EditBlogComponent implements OnInit {
 
           newFileUrls.push(publicUrl!);
           uploadedCount++;
-          this.uploadProgress.set(Math.round((uploadedCount / totalFiles) * 100));
+          this.uploadProgress.set(
+            Math.round((uploadedCount / totalFiles) * 100)
+          );
         } catch (err) {
           console.error('Unexpected error during file processing:', err);
           const toast = await this.toastCtrl.create({
-            message: `Error processing image: ${err instanceof Error ? err.message : 'Unknown error'}`,
+            message: `Error processing image: ${
+              err instanceof Error ? err.message : 'Unknown error'
+            }`,
             duration: 3000,
             color: 'danger',
-            position: 'bottom'
+            position: 'bottom',
           });
           await toast.present();
           return;
@@ -312,5 +318,9 @@ export class EditBlogComponent implements OnInit {
       // Navigate back to admin page after successful save
       this.router.navigate(['/admin']);
     }
+  }
+
+  getDisplayUrl(url: string): string {
+    return this.fileUtils.getDisplayUrl(url);
   }
 }

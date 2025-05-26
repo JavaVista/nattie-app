@@ -153,4 +153,40 @@ export class FileUtilsService {
 
     return new File([u8arr], filename, { type: mime });
   }
+
+  /**
+   * Determines if a URL points to an image file based on file extension
+   * @param url The file URL to check
+   * @returns Boolean indicating if the URL is an image
+   */
+  isImageUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Extract the file extension from the URL
+    const extension = url.split('.').pop()?.toLowerCase();
+
+    const imageExtensions = [
+      'jpg',
+      'jpeg',
+      'png',
+      'gif',
+      'bmp',
+      'webp',
+      'svg',
+      'tiff',
+      'avif',
+    ];
+
+    return imageExtensions.includes(extension || '');
+  }
+
+  /**
+   * Returns appropriate URL for display - either the original URL for images,
+   * or a placeholder for non-image files
+   * @param url The file URL to process
+   * @returns URL to display (original or placeholder)
+   */
+  getDisplayUrl(url: string): string {
+    return this.isImageUrl(url) ? url : 'assets/images/file-placeholder.png';
+  }
 }

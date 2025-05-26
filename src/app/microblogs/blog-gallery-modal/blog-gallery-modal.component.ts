@@ -12,6 +12,7 @@ import {
   IonContent,
   IonButton,
 } from '@ionic/angular/standalone';
+import { FileUtilsService } from 'src/app/services/file-utils.service';
 
 @Component({
   selector: 'app-blog-gallery-modal',
@@ -24,6 +25,7 @@ import {
 export class BlogGalleryModalComponent implements AfterViewInit {
   @Input() images: string[] = [];
   @Input() startIndex: number = 0;
+  @Input() fileUtils!: FileUtilsService;
 
   @ViewChild('swiperContainer') swiperContainer!: ElementRef;
 
@@ -35,5 +37,9 @@ export class BlogGalleryModalComponent implements AfterViewInit {
 
   dismiss() {
     this.modalCtrl.dismiss();
+  }
+
+  getDisplayUrl(url: string): string {
+    return this.fileUtils?.getDisplayUrl(url) || url;
   }
 }

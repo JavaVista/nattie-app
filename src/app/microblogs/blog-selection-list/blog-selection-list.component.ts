@@ -9,6 +9,7 @@ import {
   IonCol,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { FileUtilsService } from 'src/app/services/file-utils.service';
 
 @Component({
   selector: 'app-blog-selection-list',
@@ -25,11 +26,13 @@ export class BlogSelectionListComponent {
   @Output() deleteMicroblog = new EventEmitter<string>();
 
   private router = inject(Router);
+  private fileUtils = inject(FileUtilsService);
 
   getThumbnail(blog: Microblog): string {
-    return blog.file_urls && blog.file_urls.length > 0
-      ? blog.file_urls[0]
-      : 'assets/images/EuroTrip.png';
+    if (blog.file_urls && blog.file_urls.length > 0) {
+      return this.fileUtils.getDisplayUrl(blog.file_urls[0]);
+    }
+    return 'assets/images/EuroTrip.png';
   }
 
   getPlainTextPreview(content: any, maxCharacters: number): string {

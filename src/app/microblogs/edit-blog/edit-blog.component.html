@@ -42,7 +42,7 @@
           <div class="image-preview-container">
             @for (img of galleryImages(); track $index) {
             <div class="image-preview">
-              <img [src]="img" alt="Gallery image" />
+              <img [src]="getDisplayUrl(img)" alt="Gallery image" />
               <ion-button
                 shape="round"
                 fill="solid"
