@@ -238,15 +238,21 @@ export class SupabaseService {
       .from('microblogs')
       .update(updates)
       .match({ id });
+
     return { data, error };
   }
 
   async getMicroblogById(id: string) {
-    return this.supabase
+    const { data, error } = await this.supabase
       .from('microblogs')
       .select('*, places(*), locations(*)')
       .eq('id', id)
       .single();
+
+    // Log retrieved data for debugging
+    console.log('Retrieved blog data:', data);
+
+    return { data, error };
   }
 
   async deleteMicroblog(id: string) {

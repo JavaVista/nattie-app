@@ -74,7 +74,7 @@ import { FileUtilsService } from 'src/app/services/file-utils.service';
     PlaceSelectComponent,
     IonIcon,
     MarkdownPipe,
-    IonSpinner
+    IonSpinner,
   ],
 })
 export class CreateMicroblogComponent implements OnInit, AfterViewInit {
@@ -134,10 +134,17 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
     this.placeService.fetchPlaces().then(() => {
       this.placesLoaded.set(true);
     });
+
     this.form = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
       content: ['', [Validators.required]],
     });
+
+    this.form.statusChanges.subscribe(() => {
+      this.updateFormValidity();
+    });
+
+    this.updateFormValidity();
   }
 
   ngAfterViewInit() {
@@ -180,8 +187,10 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   }
 
   updateFormValidity() {
-    const hasValidLocation = this.selectedLocation() !== null;
-    this.isFormValid.set(this.form.valid && hasValidLocation);
+    const formIsValid = this.form.valid;
+    const locationIsSelected = this.selectedLocation() !== null;
+
+    this.isFormValid.set(formIsValid && locationIsSelected);
   }
 
   onLocationSelected(location: Location | null) {
@@ -372,7 +381,7 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
       for (const file of this.files()) {
         try {
           // Convert HEIC to JPEG if needed - conversion should already be done in handleFileInput
-          const processedFile = file; 
+          const processedFile = file;
 
           const { publicUrl, error } = await this.supabaseService.uploadFile(
             'microblog-media',

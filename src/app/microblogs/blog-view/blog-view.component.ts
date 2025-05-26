@@ -47,9 +47,10 @@ export class BlogViewComponent implements OnInit {
     this.datePipe.transform(this.blog().created_at, 'EEEE, MMMM d, y')
   );
 
-  // Update preview gallery to process URLs
   previewGallery = computed(() =>
-    this.blog().gallery_images.slice(0, 3).map(url => this.fileUtils.getDisplayUrl(url))
+    this.blog()
+      .gallery_images.slice(0, 3)
+      .map((url) => this.fileUtils.getDisplayUrl(url))
   );
 
   remainingCount = computed(() =>
@@ -73,7 +74,7 @@ export class BlogViewComponent implements OnInit {
         componentProps: {
           images: this.blog().gallery_images,
           startIndex: index,
-          fileUtils: this.fileUtils // Pass the service to the gallery modal
+          fileUtils: this.fileUtils,
         },
         breakpoints: [0, 1],
         initialBreakpoint: 1,

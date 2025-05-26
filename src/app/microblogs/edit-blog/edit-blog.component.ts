@@ -88,12 +88,33 @@ export class EditBlogComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.form.patchValue({
-      title: this.blog().title,
-      content: this.blog().content,
-    });
 
-    this.galleryImages.set(this.blog().gallery_images || []);
+    if (this.blog()) {
+      console.log('Initializing form with blog data:', {
+        title: this.blog().title,
+        contentType: typeof this.blog().content,
+        content: this.blog().content
+      });
+
+      const content = this.blog().content;
+
+      this.form.patchValue({
+        title: this.blog().title,
+        content: content
+      });
+
+      setTimeout(() => {
+        const contentControl = this.form.get('content');
+        if (contentControl && contentControl.value !== content) {
+          console.log('Re-applying content value due to mismatch');
+          contentControl.setValue(content);
+        }
+      }, 0);
+
+      this.galleryImages.set(this.blog().gallery_images || []);
+    } else {
+      console.error('Blog data is missing or undefined');
+    }
   }
 
   removeImage(index: number) {

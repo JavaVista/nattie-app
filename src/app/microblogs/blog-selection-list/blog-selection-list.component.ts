@@ -37,14 +37,17 @@ export class BlogSelectionListComponent {
 
   getPlainTextPreview(content: any, maxCharacters: number): string {
     if (!content || !content.ops || !Array.isArray(content.ops)) return '';
+
     let text = '';
     for (const op of content.ops) {
       if (typeof op.insert === 'string') {
         text += op.insert;
       }
-      if (text.length >= maxCharacters) {
-        return text.substring(0, maxCharacters) + '...';
-      }
+    }
+
+    text = text.trim();
+    if (text.length > maxCharacters) {
+      return text.substring(0, maxCharacters) + '...';
     }
     return text;
   }
