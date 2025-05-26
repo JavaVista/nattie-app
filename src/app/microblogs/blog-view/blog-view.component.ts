@@ -11,6 +11,7 @@ import { IonContent, ModalController } from '@ionic/angular/standalone';
 import { QuillViewComponent } from 'ngx-quill';
 import { MarkdownPipe } from 'src/app/shared/markdown.pipe';
 import { BlogGalleryModalComponent } from '../blog-gallery-modal/blog-gallery-modal.component';
+import { FileUtilsService } from 'src/app/services/file-utils.service';
 
 @Component({
   selector: 'app-blog-view',
@@ -34,6 +35,7 @@ export class BlogViewComponent implements OnInit {
   }>;
 
   private modalCtrl = inject(ModalController);
+  private fileUtils = inject(FileUtilsService);
 
   datePipe = inject(DatePipe);
 
@@ -45,7 +47,10 @@ export class BlogViewComponent implements OnInit {
     this.datePipe.transform(this.blog().created_at, 'EEEE, MMMM d, y')
   );
 
-  previewGallery = computed(() => this.blog().gallery_images.slice(0, 3));
+  // Update preview gallery to process URLs
+  previewGallery = computed(() =>
+    this.blog().gallery_images.slice(0, 3).map(url => this.fileUtils.getDisplayUrl(url))
+  );
 
   remainingCount = computed(() =>
     Math.max(this.blog().gallery_images.length - 3, 0)
@@ -57,14 +62,18 @@ export class BlogViewComponent implements OnInit {
     }
   }
 
+  getDisplayUrl(url: string): string {
+    return this.fileUtils.getDisplayUrl(url);
+  }
+
   openGallery(index: number) {
-    console.log('BlogViewComponent: Opening gallery with index:', index);
     this.modalCtrl
       .create({
         component: BlogGalleryModalComponent,
         componentProps: {
           images: this.blog().gallery_images,
           startIndex: index,
+          fileUtils: this.fileUtils // Pass the service to the gallery modal
         },
         breakpoints: [0, 1],
         initialBreakpoint: 1,
