@@ -30,6 +30,7 @@
     "@capacitor/status-bar": "7.0.0",
     "@capawesome/capacitor-file-picker": "^7.1.0",
     "@ionic/angular": "^8.0.0",
+    "@ionic/pwa-elements": "^3.3.0",
     "@supabase/supabase-js": "^2.48.1",
     "@types/quill": "^2.0.14",
     "heic2any": "^0.0.4",

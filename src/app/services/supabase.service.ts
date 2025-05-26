@@ -249,9 +249,6 @@ export class SupabaseService {
       .eq('id', id)
       .single();
 
-    // Log retrieved data for debugging
-    console.log('Retrieved blog data:', data);
-
     return { data, error };
   }
 

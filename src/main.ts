@@ -7,6 +7,7 @@ import { AppComponent } from './app/app.component';
 import { isDevMode } from '@angular/core';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideHttpClient } from '@angular/common/http';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -20,3 +21,5 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(),
   ],
 });
+
+defineCustomElements(window);
