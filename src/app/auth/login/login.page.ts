@@ -1,22 +1,47 @@
-import { Component, ViewChild, inject, signal } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonLabel, IonInput, IonButton, AlertController, IonSpinner, ModalController } from '@ionic/angular/standalone';
+import { Component, ViewChild, inject, signal, OnInit } from '@angular/core';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonList,
+  IonLabel,
+  IonInput,
+  IonButton,
+  AlertController,
+  IonSpinner,
+  ModalController,
+} from '@ionic/angular/standalone';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { Router } from '@angular/router';
 import { RegisterComponent } from '../register/register.component';
+import { UserProfile } from '../auth.model';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonLabel, IonInput, IonButton, IonSpinner],
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonItem,
+    IonList,
+    IonLabel,
+    IonInput,
+    IonButton,
+    IonSpinner,
+  ],
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   email = signal('');
   password = signal('');
-  user: any;
   isLoading = signal(false);
   error = signal<string | null>(null);
+  currentUserProfile = signal<UserProfile | null>(null);
 
   @ViewChild('emailInput', { static: false }) emailInput?: IonInput;
   @ViewChild('passwordInput', { static: false }) passwordInput?: IonInput;
@@ -26,7 +51,11 @@ export class LoginPage {
   private alertController = inject(AlertController);
   private modalController = inject(ModalController);
 
-  constructor() { }
+  ngOnInit() {
+    if (this.supabaseService.isLoggedIn()) {
+      this.currentUserProfile.set(this.supabaseService.userProfile());
+    }
+  }
 
   async showAlert(message: string) {
     const alert = await this.alertController.create({
@@ -36,15 +65,14 @@ export class LoginPage {
         {
           text: 'OK',
           handler: () => {
-
             if (this.email().length > 0 && this.password().length === 0) {
               this.passwordInput?.setFocus();
             } else {
               this.emailInput?.setFocus();
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     await alert.present();
   }
@@ -53,13 +81,15 @@ export class LoginPage {
     this.isLoading.set(true);
     this.error.set(null);
 
-    const { data, error } = await this.supabaseService.signIn(this.email(), this.password());
-
-    this.isLoading.set(false);
+    const { data, error } = await this.supabaseService.signIn(
+      this.email(),
+      this.password()
+    );
 
     if (error) {
       this.error.set('Invalid login credentials.');
       this.showAlert('Invalid login credentials.');
+      this.isLoading.set(false);
       return;
     }
 
@@ -68,38 +98,41 @@ export class LoginPage {
       const userExists = await this.supabaseService.checkUserExists(userId);
 
       if (!userExists) {
-        const { error: insertError } = await this.supabaseService.insertUser(userId, this.email(), "Unknown");
+        const newUserProfile: UserProfile = {
+          id: userId,
+          email: this.email(),
+          name: 'Unknown',
+          created_at: new Date().toISOString(),
+        };
+
+        const { error: insertError } = await this.supabaseService.insertUser(
+          userId,
+          this.email(),
+          'Unknown'
+        );
 
         if (insertError) {
           console.error('Error inserting missing user:', insertError.message);
+        } else {
+          this.currentUserProfile.set(newUserProfile);
         }
+      } else {
+        this.currentUserProfile.set(this.supabaseService.userProfile());
       }
     }
 
+    this.isLoading.set(false);
     this.router.navigate(['/admin']);
   }
 
-  async signOut() {
-    const { error } = await this.supabaseService.signOut();
-    if (error) {
-      console.error('Sign Out Error:', error.message);
-    } else {
-      console.log('User signed out');
-    }
-  }
-
-  async getUser() {
-    const { data, error } = await this.supabaseService.getUser();
-    if (error) {
-      console.error('Get User Error:', error.message);
-    } else {
-      console.log('Current User:', data);
-    }
+  displayUsername(): string {
+    const profile = this.currentUserProfile();
+    return profile?.name || profile?.email || 'User';
   }
 
   async onRegister() {
     const modal = await this.modalController.create({
-      component: RegisterComponent
+      component: RegisterComponent,
     });
     await modal.present();
 
@@ -115,5 +148,4 @@ export class LoginPage {
   onCancel() {
     this.router.navigate(['/']);
   }
-
 }

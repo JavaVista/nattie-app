@@ -29,6 +29,7 @@ import {
   addCircleOutline,
 } from 'ionicons/icons';
 import { register } from 'swiper/element/bundle';
+import { UserProfile } from './auth/auth.model';
 
 register();
 
@@ -55,7 +56,14 @@ export class AppComponent {
   private supabaseService = inject(SupabaseService);
   private router = inject(Router);
   isLoggedIn = this.supabaseService.isLoggedIn;
-  username = computed(() => this.supabaseService.user()?.email || 'Guest');
+
+  username = computed(() => {
+    const profile: UserProfile | null = this.supabaseService.userProfile();
+    if (profile?.name) {
+      return profile.name;
+    }
+    return this.supabaseService.user()?.email || 'Guest';
+  });
 
   constructor() {
     addIcons({

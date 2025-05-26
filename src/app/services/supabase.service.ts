@@ -2,17 +2,23 @@ import { computed, Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'src/environments/env';
 import { Microblog } from '../microblogs/microblogs.model';
+import { AuthState, UserProfile } from '../auth/auth.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
-  private authState = signal<{ user: any | null; error: any | null }>({
+  private authState = signal<AuthState>({
     user: null,
     error: null,
+    profile: null,
   });
+
   public user = computed(() => this.authState().user);
+  public userProfile = computed<UserProfile | null>(
+    () => this.authState().profile
+  );
   public isLoggedIn = computed(() => !!this.authState().user);
 
   constructor() {
@@ -27,7 +33,15 @@ export class SupabaseService {
     });
 
     if (!error) {
-      this.authState.set({ user: data.user, error: null });
+      this.authState.set({
+        user: data.user,
+        error: null,
+        profile: this.authState().profile,
+      });
+
+      if (data.user) {
+        await this.fetchUserProfile(data.user.id);
+      }
     }
     return { data, error };
   }
@@ -49,6 +63,18 @@ export class SupabaseService {
       .insert([
         { id: userId, email, name, created_at: new Date().toISOString() },
       ]);
+
+    if (!error) {
+      this.authState.update((state) => ({
+        ...state,
+        profile: {
+          id: userId,
+          email,
+          name,
+        },
+      }));
+    }
+
     return { data, error };
   }
 
@@ -57,8 +83,17 @@ export class SupabaseService {
       email,
       password,
     });
+
     if (!error) {
-      this.authState.set({ user: data.user, error: null });
+      this.authState.set({
+        user: data.user,
+        error: null,
+        profile: this.authState().profile,
+      });
+
+      if (data.user) {
+        await this.fetchUserProfile(data.user.id);
+      }
     }
     return { data, error };
   }
@@ -66,14 +101,50 @@ export class SupabaseService {
   async signOut() {
     const { error } = await this.supabase.auth.signOut();
     if (!error) {
-      this.authState.set({ user: null, error: null });
+      this.authState.set({ user: null, error: null, profile: null });
     }
     return { error };
   }
 
   async getUser() {
     const { data, error } = await this.supabase.auth.getUser();
-    this.authState.set({ user: data.user, error });
+
+    this.authState.set({
+      user: data.user,
+      error,
+      profile: this.authState().profile,
+    });
+
+    if (data.user && !this.authState().profile) {
+      await this.fetchUserProfile(data.user.id);
+    }
+
+    return { data, error };
+  }
+
+  /**
+   * Fetches the user profile from the users table
+   * @param userId The user ID to fetch the profile for
+   */
+  async fetchUserProfile(userId: string) {
+    const { data, error } = await this.supabase
+      .from('users')
+      .select('id, email, name')
+      .eq('id', userId)
+      .single();
+
+    if (!error && data) {
+      // Update the auth state with the profile data
+      this.authState.update((state) => ({
+        ...state,
+        profile: {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+        },
+      }));
+    }
+
     return { data, error };
   }
 
