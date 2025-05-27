@@ -12,6 +12,9 @@ import {
   IonAvatar,
   IonRouterOutlet,
   IonRouterLink,
+  IonButtons,
+  IonButton,
+  MenuController,
 } from '@ionic/angular/standalone';
 import { SupabaseService } from './services/supabase.service';
 import { addIcons } from 'ionicons';
@@ -27,6 +30,7 @@ import {
   cloudUploadOutline,
   images,
   addCircleOutline,
+  closeCircleOutline,
 } from 'ionicons/icons';
 import { register } from 'swiper/element/bundle';
 import { UserProfile } from './auth/auth.model';
@@ -38,6 +42,7 @@ register();
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   imports: [
+    IonButtons,
     RouterLink,
     IonMenu,
     IonContent,
@@ -50,12 +55,15 @@ register();
     IonAvatar,
     IonRouterLink,
     IonRouterOutlet,
+    IonButtons,
+    IonButton,
   ],
 })
 export class AppComponent {
   private supabaseService = inject(SupabaseService);
   private router = inject(Router);
   isLoggedIn = this.supabaseService.isLoggedIn;
+  private menuCtrl = inject(MenuController);
 
   username = computed(() => {
     const profile: UserProfile | null = this.supabaseService.userProfile();
@@ -78,7 +86,12 @@ export class AppComponent {
       cloudUploadOutline,
       images,
       addCircleOutline,
+      closeCircleOutline,
     });
+  }
+
+  closeMenu() {
+    this.menuCtrl.close('main');
   }
 
   async signOut() {
