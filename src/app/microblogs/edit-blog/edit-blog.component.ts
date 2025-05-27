@@ -89,12 +89,6 @@ export class EditBlogComponent implements OnInit {
 
   ngOnInit() {
     if (this.blog()) {
-      console.log('Initializing form with blog data:', {
-        title: this.blog().title,
-        contentType: typeof this.blog().content,
-        content: this.blog().content,
-      });
-
       // Ensure content is in proper Delta format
       const formattedContent = QuillUtils.ensureDeltaFormat(
         this.blog().content
@@ -111,10 +105,58 @@ export class EditBlogComponent implements OnInit {
     }
   }
 
-  removeImage(index: number) {
-    const updated = [...this.galleryImages()];
-    updated.splice(index, 1);
-    this.galleryImages.set(updated);
+  async removeImage(index: number) {
+    try {
+      const loadingToast = await this.toastCtrl.create({
+        message: 'Removing image...',
+        duration: 0,
+      });
+      await loadingToast.present();
+
+      const updated = [...this.galleryImages()];
+      updated.splice(index, 1);
+
+      const { error } = await this.supabaseService.updateMicroblog(
+        this.blog().id,
+        { file_urls: updated }
+      );
+
+      await loadingToast.dismiss();
+
+      if (error) {
+        console.error('Error updating microblog:', error);
+        const errorToast = await this.toastCtrl.create({
+          message: `Error removing image: ${error.message}`,
+          duration: 3000,
+          color: 'danger',
+          position: 'bottom',
+        });
+        await errorToast.present();
+        return;
+      }
+
+      // Update local state only after successful database update
+      this.galleryImages.set(updated);
+
+      const successToast = await this.toastCtrl.create({
+        message: 'Image removed successfully',
+        duration: 2000,
+        color: 'success',
+        position: 'bottom',
+      });
+      await successToast.present();
+    } catch (err) {
+      console.error('Error removing image:', err);
+      const errorToast = await this.toastCtrl.create({
+        message: `Unexpected error: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+        duration: 3000,
+        color: 'danger',
+        position: 'bottom',
+      });
+      await errorToast.present();
+    }
   }
 
   triggerFileInput() {
@@ -127,7 +169,6 @@ export class EditBlogComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
-    // Store the original
     const originalFiles = Array.from(input.files);
     this.files.set(originalFiles);
 
@@ -327,10 +368,8 @@ export class EditBlogComponent implements OnInit {
       this.uploadProgress.set(0);
       this.conversionProgress.set([]);
 
-      // Update the gallery images to include the new uploads
       this.galleryImages.set(combinedGalleryImages);
 
-      // Navigate back to admin page after successful save
       this.router.navigate(['/admin']);
     }
   }

@@ -1,6 +1,6 @@
 <ion-content [fullscreen]="true">
   <ion-grid class="blog-list-container">
-    @for (blog of microblogs; track blog.id) {
+    @for (blog of microblogsSignal(); track blog.id) {
     <ion-row class="blog-card">
       <ion-col size="auto" class="image-container">
         <img [src]="getThumbnail(blog)" alt="Blog image" class="blog-image" />
@@ -11,13 +11,28 @@
         <p class="blog-snippet">{{ getPlainTextPreview(blog.content, 50) }}</p>
 
         <div class="blog-footer">
-          <ion-button size="small" fill="clear" color="success" (click)="readMore(blog.id!)">
+          <ion-button
+            size="small"
+            fill="clear"
+            color="success"
+            (click)="readMore(blog.id!)"
+          >
             Read more...
           </ion-button>
 
           @if (isAdminView) {
-          <ion-icon name="create-outline" color="medium" (click)="onEdit(blog)" class="icon-button"></ion-icon>
-          <ion-icon name="trash-outline" color="danger" (click)="onDelete(blog.id!)" class="icon-button"></ion-icon>
+          <ion-icon
+            name="create-outline"
+            color="medium"
+            (click)="onEdit(blog)"
+            class="icon-button"
+          ></ion-icon>
+          <ion-icon
+            name="trash-outline"
+            color="danger"
+            (click)="onDelete(blog.id!)"
+            class="icon-button"
+          ></ion-icon>
           }
         </div>
       </ion-col>

@@ -1,4 +1,12 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { Microblog } from '../microblogs.model';
 import {
   IonContent,
@@ -7,10 +15,14 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  ToastController,
+  LoadingController,
+  AlertController,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { FileUtilsService } from 'src/app/services/file-utils.service';
 import { QuillUtils } from 'src/app/shared/quill-utils';
+import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
   selector: 'app-blog-selection-list',
@@ -20,7 +32,17 @@ import { QuillUtils } from 'src/app/shared/quill-utils';
   imports: [IonContent, IonButton, IonIcon, IonGrid, IonRow, IonCol],
 })
 export class BlogSelectionListComponent {
-  @Input() microblogs: Microblog[] = [];
+  // Convert to signal-based state management
+  @Input() set microblogs(value: Microblog[]) {
+    this.microblogsSignal.set(value);
+  }
+
+  get microblogs(): Microblog[] {
+    return this.microblogsSignal();
+  }
+
+  microblogsSignal: WritableSignal<Microblog[]> = signal<Microblog[]>([]);
+
   @Input() isAdminView = false;
 
   @Output() editMicroblog = new EventEmitter<Microblog>();
@@ -28,6 +50,10 @@ export class BlogSelectionListComponent {
 
   private router = inject(Router);
   private fileUtils = inject(FileUtilsService);
+  private supabaseService = inject(SupabaseService);
+  private toastCtrl = inject(ToastController);
+  private loadingCtrl = inject(LoadingController);
+  private alertCtrl = inject(AlertController);
 
   getThumbnail(blog: Microblog): string {
     if (blog.file_urls && blog.file_urls.length > 0) {
@@ -39,7 +65,7 @@ export class BlogSelectionListComponent {
   getPlainTextPreview(content: any, maxCharacters: number): string {
     if (!content) return '';
 
-    // Extract plain text from Quill 
+    // Extract plain text from Quill Delta
     const text = QuillUtils.extractTextFromDelta(content);
 
     if (text.length > maxCharacters) {
@@ -56,7 +82,79 @@ export class BlogSelectionListComponent {
     this.editMicroblog.emit(blog);
   }
 
-  onDelete(id: Microblog['id']) {
-    this.deleteMicroblog.emit(id);
+  async onDelete(id: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Are You Sure?',
+      message:
+        'Deleting this Blog will permanently remove the blog and all files.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => {
+            this.confirmDelete(id);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private async confirmDelete(id: string) {
+    try {
+      const loading = await this.loadingCtrl.create({
+        message: 'Deleting blog and files...',
+      });
+      await loading.present();
+
+      const { error } = await this.supabaseService.deleteMicroblog(id);
+
+      await loading.dismiss();
+
+      if (error) {
+        console.error('Error deleting blog:', error);
+        const toast = await this.toastCtrl.create({
+          message: `Error deleting blog: ${error.message}`,
+          duration: 3000,
+          color: 'danger',
+          position: 'bottom',
+        });
+        await toast.present();
+        return;
+      }
+
+      const updatedBlogs = this.microblogsSignal().filter(
+        (blog) => blog.id !== id
+      );
+      this.microblogsSignal.set(updatedBlogs);
+
+      console.log('Blog deleted successfully, updated local state');
+
+      const toast = await this.toastCtrl.create({
+        message: 'Blog deleted successfully',
+        duration: 2000,
+        color: 'success',
+        position: 'bottom',
+      });
+      await toast.present();
+
+      this.deleteMicroblog.emit(id);
+    } catch (err) {
+      console.error('Unexpected error during deletion:', err);
+      const toast = await this.toastCtrl.create({
+        message: `Unexpected error: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+        duration: 3000,
+        color: 'danger',
+        position: 'bottom',
+      });
+      await toast.present();
+    }
   }
 }

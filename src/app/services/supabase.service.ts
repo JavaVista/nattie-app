@@ -234,10 +234,43 @@ export class SupabaseService {
   }
 
   async updateMicroblog(id: string, updates: Partial<Microblog>) {
+    
+    if (updates.file_urls !== undefined) {
+
+      
+      // Get the current blog to compare file URLs
+      const { data: currentBlog } = await this.getMicroblogById(id);
+      
+      if (currentBlog && currentBlog.file_urls) {
+        const currentUrls = new Set<string>(currentBlog.file_urls as string[]);
+        const updatedUrls = new Set<string>(updates.file_urls);
+        const removedUrls = [...currentUrls].filter(url => !updatedUrls.has(url));
+
+        if (removedUrls.length > 0) {
+
+          const deleteResult = await this.deleteFiles('microblog-media', removedUrls);
+
+        } else {
+          console.log('No files to delete');
+        }
+      } else {
+        console.log('No current file_urls to compare with');
+      }
+    } else {
+      console.log('No file_urls updates, skipping file deletion check');
+    }
+    
+    // Proceed with the database update
     const { data, error } = await this.supabase
       .from('microblogs')
       .update(updates)
       .match({ id });
+
+    if (error) {
+      console.error('Error updating microblog in database:', error);
+    } else {
+      console.log('Microblog updated successfully in database');
+    }
 
     return { data, error };
   }
@@ -252,11 +285,122 @@ export class SupabaseService {
     return { data, error };
   }
 
+  /**
+   * Deletes a file from Supabase storage
+   * @param bucket The storage bucket name
+   * @param fileUrl The full URL of the file to delete
+   * @returns Object containing success status or error
+   */
+  async deleteFile(bucket: string, fileUrl: string) {
+    try {
+    
+      // Extract the file path from the URL
+      // URLs look like: https://icymhxalnlyozdzmqltg.supabase.co/storage/v1/object/public/microblog-media/microblogs/filename.jpg
+      const pathRegex = new RegExp(`public/${bucket}/(.+)`);
+      const match = fileUrl.match(pathRegex);
+      
+      if (!match || !match[1]) {
+        console.error('Could not extract file path from URL:', fileUrl);
+        return { error: { message: 'Invalid file URL format' } };
+      }
+      
+      const filePath = match[1];
+         
+      const { data, error } = await this.supabase.storage
+        .from(bucket)
+        .remove([filePath]);
+
+      if (error) {
+        console.error('Supabase returned error deleting file:', error);
+        return { error };
+      }
+
+      return { success: true, data };
+    } catch (err) {
+      console.error('Unexpected error during file deletion:', err);
+      return {
+        error: {
+          message: err instanceof Error ? err.message : 'Unknown deletion error',
+        },
+      };
+    }
+  }
+
+  /**
+   * Deletes multiple files from Supabase storage
+   * @param bucket The storage bucket name
+   * @param fileUrls Array of file URLs to delete
+   * @returns Object containing success status or error
+   */
+  async deleteFiles(bucket: string, fileUrls: string[]) {
+    try {
+      
+      const results = await Promise.all(
+        fileUrls.map(url => this.deleteFile(bucket, url))
+      );
+      
+      // Check if any deletion failed
+      const errors = results
+        .filter(result => result.error)
+        .map(result => result.error?.message);
+        
+      if (errors.length > 0) {
+        console.error('Some files failed to delete:', errors);
+        return { 
+          error: { 
+            message: `Some files failed to delete: ${errors.join(', ')}` 
+          },
+          partialSuccess: true 
+        };
+      }
+      
+      return { success: true };
+    } catch (err) {
+      console.error('Error in batch file deletion:', err);
+      return {
+        error: {
+          message: err instanceof Error ? err.message : 'Unknown batch deletion error',
+        },
+      };
+    }
+  }
+
   async deleteMicroblog(id: string) {
+  
+    // First get the blog to retrieve file URLs
+    const { data: blog, error: getBlogError } = await this.getMicroblogById(id);
+    
+    if (getBlogError || !blog) {
+      console.error('Error retrieving blog for deletion:', getBlogError);
+      return { error: getBlogError || { message: 'Blog not found' } };
+    }
+    
+   
+    // Delete files from storage if there are any
+    if (blog.file_urls && blog.file_urls.length > 0) {
+
+      const deleteResult = await this.deleteFiles('microblog-media', blog.file_urls as string[]);
+
+      if (deleteResult.error && !deleteResult.partialSuccess) {
+
+        return { error: deleteResult.error };
+      }
+    } else {
+      console.log('No files to delete for this blog');
+    }
+    
+
     const { data, error } = await this.supabase
       .from('microblogs')
       .delete()
       .match({ id });
+      
+    if (error) {
+      console.error('Error deleting blog from database:', error);
+    } else {
+      console.log('Blog deleted successfully from database');
+    }
+    
     return { data, error };
   }
 
