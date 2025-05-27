@@ -1,4 +1,4 @@
-<ion-header [class.transparent-header]="!isEditMode()">
+<ion-header  [class]="!isEditMode() ? 'transparent-header ion-no-border' : ''">
   <ion-toolbar>
     @if (!isEditMode()) {
       <ion-buttons slot="start">
