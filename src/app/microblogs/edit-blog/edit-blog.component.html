@@ -75,6 +75,7 @@
             #fileInput
             (change)="handleFileInput($event)"
             style="display: none"
+            accept="image/*,video/*"
           />
 
           <!-- Preview of new images -->
@@ -82,7 +83,7 @@
           <div class="selected-files-info">
             <ion-chip color="primary">
               <ion-icon name="images"></ion-icon>
-              <ion-label>{{ files().length }} new images selected</ion-label>
+              <ion-label>{{ files().length }} new files selected</ion-label>
             </ion-chip>
 
             <ion-button

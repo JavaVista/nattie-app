@@ -12,6 +12,7 @@ import { QuillViewComponent } from 'ngx-quill';
 import { MarkdownPipe } from 'src/app/shared/markdown.pipe';
 import { BlogGalleryModalComponent } from '../blog-gallery-modal/blog-gallery-modal.component';
 import { FileUtilsService } from 'src/app/services/file-utils.service';
+import { QuillUtils } from 'src/app/shared/quill-utils';
 
 @Component({
   selector: 'app-blog-view',
@@ -56,6 +57,11 @@ export class BlogViewComponent implements OnInit {
   remainingCount = computed(() =>
     Math.max(this.blog().gallery_images.length - 3, 0)
   );
+
+  // Compute the formatted content to ensure it's in Delta format
+  formattedContent = computed(() => {
+    return QuillUtils.ensureDeltaFormat(this.blog().content);
+  });
 
   ngOnInit() {
     if (!this.blog) {

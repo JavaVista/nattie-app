@@ -10,6 +10,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { FileUtilsService } from 'src/app/services/file-utils.service';
+import { QuillUtils } from 'src/app/shared/quill-utils';
 
 @Component({
   selector: 'app-blog-selection-list',
@@ -36,31 +37,11 @@ export class BlogSelectionListComponent {
   }
 
   getPlainTextPreview(content: any, maxCharacters: number): string {
-    console.log(' BlogSelectionListComponent 👉 content:', content);
-
     if (!content) return '';
 
-    let text = '';
+    // Extract plain text from Quill 
+    const text = QuillUtils.extractTextFromDelta(content);
 
-    // Check if content is a Quill Delta
-    if (content.ops && Array.isArray(content.ops)) {
-      for (const op of content.ops) {
-        console.log(' BlogSelectionListComponent 👉 op:', op);
-        if (typeof op.insert === 'string') {
-          text += op.insert;
-        }
-      }
-    }
-    // Check if content is HTML string
-    else if (typeof content === 'string') {
-      //  HTML stripping logic
-      text = content
-        .replace(/<[^>]*>/g, ' ')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/\s+/g, ' ');
-    }
-
-    text = text.trim();
     if (text.length > maxCharacters) {
       return text.substring(0, maxCharacters) + '...';
     }

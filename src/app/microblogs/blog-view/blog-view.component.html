@@ -1,4 +1,7 @@
-<div class="fixed-hero-background" [style.background-image]="'url(' + heroImage() + ')'"></div>
+<div
+  class="fixed-hero-background"
+  [style.background-image]="'url(' + heroImage() + ')'"
+></div>
 
 <ion-content [scrollEvents]="true" class="blog-scroll-content">
   <div class="main-content">
@@ -9,7 +12,7 @@
 
     <p class="date">{{ formattedDate() }}</p>
 
-    <quill-view [content]="blog().content" format="object"></quill-view>
+    <quill-view [content]="formattedContent()" format="object"></quill-view>
 
     @if (blog().useless_facts && blog().useless_facts.length > 0) {
     <div class="useless-facts-section">
@@ -20,25 +23,30 @@
         }
       </ul>
     </div>
-    }
-
-    @if (blog().place?.place_name) {
+    } @if (blog().place?.place_name) {
     <h4 class="place-name">{{ blog().place?.place_name }}</h4>
     }
 
-    <div class="map-placeholder">
-    </div>
+    <div class="map-placeholder"></div>
 
     @if (blog().gallery_images && blog().gallery_images.length > 0) {
     <div class="gallery">
       <h5>Gallery</h5>
       <div class="gallery-grid">
         @for (img of previewGallery(); track $index) {
-        <img [src]="img" class="gallery-thumb" alt="Gallery image" (click)="openGallery($index)" />
-        }
-
-        @if (remainingCount() > 0) {
-        <div class="gallery-more" (click)="openGallery(previewGallery().length)">+{{ remainingCount() }}</div>
+        <img
+          [src]="img"
+          class="gallery-thumb"
+          alt="Gallery image"
+          (click)="openGallery($index)"
+        />
+        } @if (remainingCount() > 0) {
+        <div
+          class="gallery-more"
+          (click)="openGallery(previewGallery().length)"
+        >
+          +{{ remainingCount() }}
+        </div>
         }
       </div>
     </div>

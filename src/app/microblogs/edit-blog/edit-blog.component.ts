@@ -7,7 +7,6 @@ import {
   signal,
   Signal,
   ViewChild,
-  computed,
 } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -27,6 +26,7 @@ import {
 import { QuillModule } from 'ngx-quill';
 import { Router } from '@angular/router';
 import { FileUtilsService } from 'src/app/services/file-utils.service';
+import { QuillUtils } from 'src/app/shared/quill-utils';
 
 @Component({
   selector: 'app-edit-blog',
@@ -92,23 +92,18 @@ export class EditBlogComponent implements OnInit {
       console.log('Initializing form with blog data:', {
         title: this.blog().title,
         contentType: typeof this.blog().content,
-        content: this.blog().content
+        content: this.blog().content,
       });
 
-      const content = this.blog().content;
+      // Ensure content is in proper Delta format
+      const formattedContent = QuillUtils.ensureDeltaFormat(
+        this.blog().content
+      );
 
       this.form.patchValue({
         title: this.blog().title,
-        content: content
+        content: formattedContent,
       });
-
-      setTimeout(() => {
-        const contentControl = this.form.get('content');
-        if (contentControl && contentControl.value !== content) {
-          console.log('Re-applying content value due to mismatch');
-          contentControl.setValue(content);
-        }
-      }, 0);
 
       this.galleryImages.set(this.blog().gallery_images || []);
     } else {

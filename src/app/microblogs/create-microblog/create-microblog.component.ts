@@ -98,13 +98,14 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
   private aiService = inject(AiService);
   private placeService = inject(PlaceService);
   private fileUtils = inject(FileUtilsService);
+
   private toolbarOptions = [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
     ['bold', 'italic', 'underline', 'blockquote'],
     [{ list: 'ordered' }, { list: 'bullet' }],
     [{ script: 'sub' }, { script: 'super' }],
     [{ indent: '-1' }, { indent: '+1' }],
     ['table'],
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
     [{ color: [] }, { background: [] }],
     [{ align: [] }],
     ['link', 'image'],

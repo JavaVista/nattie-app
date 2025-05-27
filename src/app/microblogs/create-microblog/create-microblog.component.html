@@ -33,6 +33,7 @@
         <quill-editor
           formControlName="content"
           [modules]="quillModules"
+          format="object"
           [styles]="quillStyles"
           [placeholder]="'Write your blog content here...'"
           [minLength]="40"
@@ -107,6 +108,7 @@
             #fileInput
             (change)="handleFileInput($event)"
             style="display: none"
+            accept="image/*"
           />
 
           <!-- Preview of selected images -->
@@ -156,9 +158,7 @@
             </div>
             }
           </div>
-          }
-
-          @if (uploadProgress() > 0) {
+          } @if (uploadProgress() > 0) {
           <div class="upload-progress-container">
             <ion-progress-bar
               [value]="uploadProgress() / 100"
