@@ -88,7 +88,6 @@ export class EditBlogComponent implements OnInit {
   };
 
   ngOnInit() {
-
     if (this.blog()) {
       console.log('Initializing form with blog data:', {
         title: this.blog().title,

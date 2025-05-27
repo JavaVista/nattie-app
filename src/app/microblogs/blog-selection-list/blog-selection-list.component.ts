@@ -36,13 +36,28 @@ export class BlogSelectionListComponent {
   }
 
   getPlainTextPreview(content: any, maxCharacters: number): string {
-    if (!content || !content.ops || !Array.isArray(content.ops)) return '';
+    console.log(' BlogSelectionListComponent 👉 content:', content);
+
+    if (!content) return '';
 
     let text = '';
-    for (const op of content.ops) {
-      if (typeof op.insert === 'string') {
-        text += op.insert;
+
+    // Check if content is a Quill Delta
+    if (content.ops && Array.isArray(content.ops)) {
+      for (const op of content.ops) {
+        console.log(' BlogSelectionListComponent 👉 op:', op);
+        if (typeof op.insert === 'string') {
+          text += op.insert;
+        }
       }
+    }
+    // Check if content is HTML string
+    else if (typeof content === 'string') {
+      //  HTML stripping logic
+      text = content
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ');
     }
 
     text = text.trim();
