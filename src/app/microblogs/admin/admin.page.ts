@@ -49,6 +49,10 @@ export class AdminPage implements OnInit {
     this.loadMicroblogs();
   }
 
+  ionViewWillEnter() {
+    this.loadMicroblogs();
+  }
+
   async loadMicroblogs() {
     try {
       this.loading = true;
