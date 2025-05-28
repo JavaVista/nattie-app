@@ -386,7 +386,8 @@ export class CreateMicroblogComponent implements OnInit, AfterViewInit {
 
           const { publicUrl, error } = await this.supabaseService.uploadFile(
             'microblog-media',
-            processedFile
+            processedFile,
+            userId // Pass user ID for filename uniqueness
           );
 
           if (error) {

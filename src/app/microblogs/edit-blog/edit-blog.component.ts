@@ -287,6 +287,9 @@ export class EditBlogComponent implements OnInit {
   async saveChanges() {
     if (this.form.invalid) return;
 
+    const currentUser = this.supabaseService.user();
+    const userId = currentUser?.id;
+
     // Upload new images if any
     const newFileUrls: string[] = [];
 
@@ -301,7 +304,8 @@ export class EditBlogComponent implements OnInit {
 
           const { publicUrl, error } = await this.supabaseService.uploadFile(
             'microblog-media',
-            processedFile
+            processedFile,
+            userId // Pass user ID for filename uniqueness
           );
 
           if (error) {
