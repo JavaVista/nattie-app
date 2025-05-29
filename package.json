@@ -1,8 +1,8 @@
 {
   "name": "nattie-app",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Javi using the Ionic Framework",
+  "homepage": "https://nattie.us/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
