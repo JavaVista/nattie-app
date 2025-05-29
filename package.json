@@ -7,6 +7,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:pwa": "ng build --configuration production && npm run pwa:copy-assets",
+    "pwa:copy-assets": "cp -r src/assets/icons www/assets/ && cp -r src/assets/resources www/assets/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
