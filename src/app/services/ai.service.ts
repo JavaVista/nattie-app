@@ -1,15 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { env } from 'src/environments/env';
+import { environment } from 'src/environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AiService {
   private http = inject(HttpClient);
-  private supabaseUrl = env.supabaseUrl;
-  private supabaseAnonKey = env.supabaseAnonKey;
+  private supabaseUrl = environment.supabaseUrl;
+  private supabaseAnonKey = environment.supabaseAnonKey;
 
   constructor() {}
 

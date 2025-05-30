@@ -1,8 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { env } from 'src/environments/env';
 import { Place } from '../places/place.model';
 import { LocationService } from './location.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,7 @@ export class PlaceService {
   private locationService = inject(LocationService);
 
   constructor() {
-    this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
   }
 
   async createPlace(place: Partial<Place>) {

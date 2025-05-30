@@ -1,7 +1,7 @@
-import { effect, Injectable, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { env } from 'src/environments/env';
 import { Location } from '../locations/location.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,7 @@ export class LocationService {
   error = signal<string | null>(null);
 
   constructor() {
-    this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
   }
 
   async fetchLocations() {

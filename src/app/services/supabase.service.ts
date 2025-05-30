@@ -1,8 +1,8 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { env } from 'src/environments/env';
 import { Microblog } from '../microblogs/microblogs.model';
 import { AuthState, UserProfile } from '../auth/auth.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +22,7 @@ export class SupabaseService {
   public isLoggedIn = computed(() => !!this.authState().user);
 
   constructor() {
-    this.supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
     this.getUser();
   }
 
