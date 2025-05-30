@@ -10,6 +10,7 @@
     "build:pwa": "ng build --configuration production && npm run pwa:copy-assets",
     "pwa:copy-assets": "cp -r src/assets/icons www/assets/ && cp -r src/assets/resources www/assets/",
     "serve:pwa": "npm run build:pwa && npx http-server www -p 8080 -c-1 --proxy http://localhost:8080?",
+    "deploy": "npm run build:pwa && firebase deploy",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
