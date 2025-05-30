@@ -34,6 +34,11 @@ log.txt
 npm-debug.log
 yarn-error.log
 
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
 # IDEs and editors
 .idea/
 .project
