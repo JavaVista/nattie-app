@@ -1,14 +1,15 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map } from 'rxjs';
-import { env } from 'src/environments/env';
+import { environment } from 'src/environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class GooglePlacesService {
   private http = inject(HttpClient);
-  private readonly proxyUrl = `${env.supabaseUrl}/functions/v1/places-proxy`;
+  private readonly proxyUrl = `${environment.supabaseUrl}/functions/v1/places-proxy`;
 
   private readonly headers = new HttpHeaders({
     'Content-Type': 'application/json',
