@@ -2,7 +2,7 @@
   "name": "Nattie App - Travel Blog",
   "short_name": "Nattie",
   "description": "Personal travel blog app for sharing travel adventures",
-  "theme_color": "#1976d2",
+  "theme_color": "#989aa2",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",

@@ -1,29 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nattie App</title>
 
-<head>
-  <meta charset="utf-8"/>
-  <title>Nattie App</title>
+    <base href="/" />
+    <!-- PWA Meta Tags -->
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
 
-  <base href="/"/>
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
+    <link rel="icon" type="image/webp" href="assets/icons/icon-48.webp" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.webp" />
 
-  <meta name="color-scheme" content="light dark"/>
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="format-detection" content="telephone=no"/>
-  <meta name="msapplication-tap-highlight" content="no"/>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.webmanifest" />
 
-  <link rel="icon" type="image/png" href="assets/icon/favicon.png"/>
+    <!-- iOS Specific - add to homescreen for ios -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Nattie" />
 
-  <!-- add to homescreen for ios -->
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1976d2">
-</head>
+    <!-- Splash Screens for iOS -->
+    <link rel="apple-touch-startup-image" href="assets/resources/splash.png" />
 
-<body>
-  <app-root></app-root>
-  <noscript>Please enable JavaScript to continue using this application.</noscript>
-</body>
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#989aa2" />
+  </head>
 
+  <body>
+    <app-root></app-root>
+    <noscript
+      >Please enable JavaScript to continue using this application.</noscript
+    >
+  </body>
 </html>
