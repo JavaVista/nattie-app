@@ -34,4 +34,8 @@ export const routes: Routes = [
         (m) => m.MicroblogPage
       ),
   },
+  {
+    path: '**',
+    redirectTo: 'home',
+  },
 ];

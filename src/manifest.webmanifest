@@ -1,26 +1,56 @@
 {
   "name": "Nattie App - Travel Blog",
   "short_name": "Nattie",
-  "description": "Personal travel blog app",
+  "description": "Personal travel blog app for sharing travel adventures",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
   "orientation": "portrait-primary",
-  "categories": ["travel", "lifestyle", "social"],
-  "screenshots": [
+  "categories": ["travel", "lifestyle", "social", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "shortcuts": [
     {
-      "src": "assets/images/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
+      "name": "New Travel Log",
+      "short_name": "New Log",
+      "description": "View a travel blog entry",
+      "url": "/microblogs/trip",
+      "icons": [
+        {
+          "src": "assets/icons/icon-96.webp",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
-      "src": "assets/images/screenshot-narrow.png",
-      "sizes": "750x1334",
+      "name": "View Locations",
+      "short_name": "Locations",
+      "description": "Browse your travel locations",
+      "url": "/home",
+      "icons": [
+        {
+          "src": "assets/icons/icon-96.webp",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/images/screenshot-narrow.jpg",
+      "sizes": "1080x2425",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Travel blog interface on mobile"
+    },
+    {
+      "src": "assets/images/screenshot-wide.jpg",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Travel blog interface on desktop"
     }
   ],
   "icons": [
@@ -52,7 +82,13 @@
       "src": "assets/icons/icon-192.webp",
       "type": "image/webp",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-192.webp",
+      "type": "image/webp",
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "assets/icons/icon-256.webp",
@@ -64,7 +100,13 @@
       "src": "assets/icons/icon-512.webp",
       "type": "image/webp",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.webp",
+      "type": "image/webp",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ]
 }
