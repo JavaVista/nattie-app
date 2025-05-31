@@ -5,6 +5,7 @@
     {
       "name": "app",
       "installMode": "prefetch",
+      "updateMode": "prefetch",
       "resources": {
         "files": [
           "/favicon.ico",
@@ -25,13 +26,25 @@
           "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
         ]
       }
+    },
+    {
+      "name": "fonts",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/**/*.(woff|woff2|ttf|eot)"
+        ]
+      }
     }
   ],
   "dataGroups": [
     {
-      "name": "supabase-api",
+      "name": "supabase-api-fresh",
       "urls": [
-        "https://*.supabase.co/**"
+        "https://icymhxalnlyozdzmqltg.supabase.co/rest/v1/microblogs**",
+        "https://icymhxalnlyozdzmqltg.supabase.co/rest/v1/locations**",
+        "https://icymhxalnlyozdzmqltg.supabase.co/rest/v1/places**"
       ],
       "cacheConfig": {
         "strategy": "freshness",
@@ -41,16 +54,37 @@
       }
     },
     {
-      "name": "travel-data-cache",
+      "name": "supabase-storage-performance",
       "urls": [
-        "https://*.supabase.co/rest/v1/microblogs**",
-        "https://*.supabase.co/rest/v1/locations**",
-        "https://*.supabase.co/rest/v1/places**"
+        "https://icymhxalnlyozdzmqltg.supabase.co/storage/v1/object/public/**"
       ],
       "cacheConfig": {
         "strategy": "performance",
+        "maxSize": 200,
+        "maxAge": "7d"
+      }
+    },
+    {
+      "name": "supabase-functions",
+      "urls": [
+        "https://icymhxalnlyozdzmqltg.supabase.co/functions/v1/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
         "maxSize": 50,
-        "maxAge": "1d"
+        "maxAge": "30m",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "google-places-proxy",
+      "urls": [
+        "https://icymhxalnlyozdzmqltg.supabase.co/functions/v1/places-proxy**"
+      ],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 100,
+        "maxAge": "24h"
       }
     }
   ]

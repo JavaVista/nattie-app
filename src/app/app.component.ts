@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonMenu,
@@ -34,6 +34,7 @@ import {
 } from 'ionicons/icons';
 import { register } from 'swiper/element/bundle';
 import { UserProfile } from './auth/auth.model';
+import { PwaService } from './services/pwa.service';
 
 register();
 
@@ -59,11 +60,12 @@ register();
     IonButton,
   ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   private supabaseService = inject(SupabaseService);
-  private router = inject(Router);
   isLoggedIn = this.supabaseService.isLoggedIn;
+  private router = inject(Router);
   private menuCtrl = inject(MenuController);
+  private pwaService = inject(PwaService);
 
   username = computed(() => {
     const profile: UserProfile | null = this.supabaseService.userProfile();
@@ -88,6 +90,17 @@ export class AppComponent {
       addCircleOutline,
       closeCircleOutline,
     });
+  }
+
+  ngOnInit() {
+    // 🚀 Initialize PWA updates on app start
+    this.pwaService.initPwaPrompt();
+
+    console.log('Nattie initialized! 🌍');
+  }
+
+  ngOnDestroy() {
+    this.pwaService.destroy();
   }
 
   closeMenu() {
