@@ -1,16 +1,15 @@
 // This function acts as a proxy to the Google Places API.
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { corsHeaders, jsonResponse, imageResponse } from '../_shared/cors.ts';
+import { getCorsHeaders, jsonResponse, imageResponse } from '../_shared/cors.ts';
 
 const GOOGLE_API_KEY = Deno.env.get('GOOGLE_PLACES_API_KEY');
-if (!GOOGLE_API_KEY) {
-  console.error('Missing GOOGLE_PLACES_API_KEY.');
-}
 const PLACES_API_BASE_URL = 'https://maps.googleapis.com/maps/api/place';
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('origin');
+
   if (req.method === 'OPTIONS') {
-    return new Response('OK', { headers: corsHeaders });
+    return new Response('OK', { headers: getCorsHeaders(origin) });
   }
 
   if (req.method === 'GET') {

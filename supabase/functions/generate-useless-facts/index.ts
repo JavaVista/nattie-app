@@ -4,30 +4,35 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { corsHeaders, jsonResponse } from '../_shared/cors.ts';
+import { getCorsHeaders, jsonResponse } from '../_shared/cors.ts';
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS')
-    return new Response(null, { headers: corsHeaders });
+  const origin = req.headers.get('origin');
 
-  const { prompt } = await req.json();
-
-  if (!prompt)
-    return new Response(JSON.stringify({ error: 'Missing prompt parameter' }), {
-      status: 400,
-    });
-
-  const apiKey = Deno.env.get('GEMINI_API_KEY');
-
-  if (!apiKey)
-    return new Response(
-      JSON.stringify({ error: 'Your Gemini API key is not configured' }),
-      {
-        status: 500,
-      }
-    );
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }
 
   try {
+    const { prompt } = await req.json();
+
+    if (!prompt) {
+      return jsonResponse(
+        { error: 'Missing prompt parameter' },
+        400,
+        origin
+      );
+    }
+
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
+    if (!apiKey) {
+      return jsonResponse(
+        { error: 'Server configuration error' },
+        500,
+        origin
+      );
+    }
+
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
       {
@@ -58,9 +63,14 @@ Deno.serve(async (req) => {
       })
       .slice(0, 3);
 
-    return jsonResponse({ facts });
-  } catch (_) {
-    return jsonResponse({ error: 'Error generating facts.' }, { status: 500 });
+    return jsonResponse({ facts }, 200, origin);
+  } catch (error) {
+    console.error('Error generating facts:', error);
+    return jsonResponse(
+      { error: 'Error generating facts.' },
+      500,
+      origin
+    );
   }
 });
 
