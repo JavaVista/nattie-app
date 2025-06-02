@@ -38,3 +38,84 @@
 
 /* quill-editor */
 @import "quill/dist/quill.snow.css";
+
+
+// Fix for iOS PWA icon colors in toolbars
+ion-toolbar {
+  ion-button {
+    ion-icon {
+      color: var(--ion-color-dark) !important;
+    }
+  }
+
+  ion-menu-button {
+    ion-icon {
+      color: var(--ion-color-dark) !important;
+    }
+  }
+
+  ion-back-button {
+    color: var(--ion-color-dark) !important;
+
+    ion-icon {
+      color: var(--ion-color-dark) !important;
+    }
+  }
+
+  // For standalone icons in toolbar
+  ion-icon {
+    color: var(--ion-color-dark) !important;
+  }
+}
+
+// Dark mode overrides
+@media (prefers-color-scheme: dark) {
+  ion-toolbar {
+    ion-button {
+      ion-icon {
+        color: var(--ion-color-light) !important;
+      }
+    }
+
+    ion-menu-button {
+      ion-icon {
+        color: var(--ion-color-light) !important;
+      }
+    }
+
+    ion-back-button {
+      color: var(--ion-color-light) !important;
+
+      ion-icon {
+        color: var(--ion-color-light) !important;
+      }
+    }
+
+    ion-icon {
+      color: var(--ion-color-light) !important;
+    }
+  }
+}
+
+// iOS specific targeting
+.ios {
+  ion-toolbar {
+    ion-button ion-icon,
+    ion-menu-button ion-icon,
+    ion-back-button,
+    ion-icon {
+      color: var(--ion-color-dark) !important;
+    }
+  }
+
+  &.dark {
+    ion-toolbar {
+      ion-button ion-icon,
+      ion-menu-button ion-icon,
+      ion-back-button,
+      ion-icon {
+        color: var(--ion-color-light) !important;
+      }
+    }
+  }
+}
